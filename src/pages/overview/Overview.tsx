@@ -126,18 +126,15 @@ function OverviewNodesTable(props: { clusterDetails: ClusterDetails }) {
       </Table.Head>
       <Table.Body>
         {clusterDetails.nodes.map((node) => {
-
           return (
             <Table.Row key={node.id}>
-              <Table.Cell className="flex flex-row justify-between">
-                {node.id}
-              </Table.Cell>
+              <Table.Cell className="flex flex-row justify-between">{node.id}</Table.Cell>
               <Table.Cell>{node.addr}</Table.Cell>
               <Table.Cell>{node.isUp ? <IconCheck /> : <IconCross />}</Table.Cell>
               <Table.Cell>{isNil(node.lastSeenSecsAgo) ? '-' : `< ${node.lastSeenSecsAgo} seconds ago`}</Table.Cell>
               <Table.Cell>{node.hostname}</Table.Cell>
-              <Table.Cell>{formatNumberToGBs( node.dataPartition.available)}</Table.Cell>
-              <Table.Cell>{formatNumberToGBs( node.dataPartition.total)}</Table.Cell>
+              <Table.Cell>{formatNumberToGBs(node.dataPartition.available)}</Table.Cell>
+              <Table.Cell>{formatNumberToGBs(node.dataPartition.total)}</Table.Cell>
             </Table.Row>
           );
         })}

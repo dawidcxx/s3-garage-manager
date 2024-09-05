@@ -1,18 +1,24 @@
 import { DrawerApi } from '@/components/Drawer';
 import { Title } from '@/components/Title';
-import { useRef } from 'react';
+import { Ref, useRef } from 'react';
 import { BucketCreateForm } from './BucketCreateForm';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useMutation, useQueries, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { s3GarageClient } from '@/api/garage/s3-garage-client';
 
 import { Table } from '@/components/table/Table';
 import { IconKey } from '@/components/icons/IconKey';
 import { IconCopy } from '@/components/icons/IconCopy';
 import { useWriteToClipBoard } from '@/components/hooks/use-write-to-clipboard';
+import { IconTrash } from '@/components/icons/IconTrash';
+import { ConfirmationModal, ModalApi } from '@/components/ConfirmationModal';
+import { BucketListItem } from '@/api/garage/s3-garage-client-responses';
+import { useToaster } from '@/components/Toaster/useToaster';
+import { ToastType } from '@/components/Toaster/Toast';
+import { errorToMessage } from '@/lib/util/error-to-message';
 
 export function Buckets() {
   const writeToClipboard = useWriteToClipBoard();
-  const bucketsRef = useRef<HTMLDivElement | null>(null);
+  const modalApi = useRef<ModalApi | null>(null);
   const drawerApi = useRef<DrawerApi | null>(null);
 
   const { data } = useSuspenseQuery({
@@ -37,8 +43,18 @@ export function Buckets() {
       </Title>
       <BucketCreateForm drawerApi={drawerApi} />
 
+      <ConfirmationModal modalId={'REMOVE_BUCKET_MODAL'} ref={modalApi}>
+        <div className="flex flex-col gap-2">
+          <span>Deletes a storage bucket. A bucket cannot be deleted if it is not empty.</span>
+          <span>
+            <strong>Warning: </strong> this will delete all aliases associated with the bucket!
+          </span>
+        </div>
+      </ConfirmationModal>
+
       <Table.Root>
         <Table.Head>
+          <Table.Cell />
           <Table.Cell>ID</Table.Cell>
           <Table.Cell>Global Aliases</Table.Cell>
           <Table.Cell>Local Aliases</Table.Cell>
@@ -49,6 +65,9 @@ export function Buckets() {
             const hasLocalAliases = bucket.localAliases.length > 0;
             return (
               <Table.Row key={bucket.id}>
+                <Table.Cell>
+                  <DeleteBucketButton bucket={bucket} modalApi={modalApi} />
+                </Table.Cell>
                 <Table.Cell>{bucket.id}</Table.Cell>
                 <Table.Cell>
                   {bucket.globalAliases.map((globalAlias) => {
@@ -94,5 +113,39 @@ export function Buckets() {
         </Table.Body>
       </Table.Root>
     </div>
+  );
+}
+
+function DeleteBucketButton(props: { modalApi: React.MutableRefObject<ModalApi | null>; bucket: BucketListItem }) {
+  const { bucket, modalApi } = props;
+  const { toast } = useToaster();
+  const queryClient = useQueryClient();
+
+  const removeBucketMutation = useMutation({
+    mutationFn: (bucketId: string) => s3GarageClient.removeBucket(bucketId),
+    onSuccess: () => {
+      toast('Bucket deleted successfully', ToastType.Default);
+      queryClient.invalidateQueries({ queryKey: ['buckets'] });
+    },
+    onError: (e) => {
+      const msg = errorToMessage(e);
+      toast(`Failed to delete bucket: ${msg}`, ToastType.Error);
+    },
+  });
+
+  return (
+    <button
+      className="btn  btn-sm hover:btn-error"
+      onClick={() => {
+        modalApi.current?.open().then((isConfirmed) => {
+          if (isConfirmed) {
+            removeBucketMutation.mutate(bucket.id);
+          }
+        });
+      }}
+    >
+      {removeBucketMutation.isPending && <div className="loading loading-sm" />}
+      {!removeBucketMutation.isPending && <IconTrash />}
+    </button>
   );
 }

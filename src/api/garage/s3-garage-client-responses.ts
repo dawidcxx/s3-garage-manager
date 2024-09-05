@@ -53,12 +53,11 @@ export const KeyDetailsSchema = z.object({
 
 export type KeyDetails = z.infer<typeof KeyDetailsSchema>;
 
-
 export const CreatedKeySchema = z.object({
   name: z.string(),
   accessKeyId: z.string(),
-  secretAccessKey: z.string()
-}); 
+  secretAccessKey: z.string(),
+});
 
 export type CreatedKey = z.infer<typeof CreatedKeySchema>;
 
@@ -99,11 +98,10 @@ export const ClusterDetailsSchema = z.object({
         tags: z.array(z.string()),
       }),
     }),
-),
-})
+  ),
+});
 
 export type ClusterDetails = z.infer<typeof ClusterDetailsSchema>;
-
 
 // {
 //   "node": "f09e1c6d4bd1baa989738aa4d105d2fb7eed6d5b4d84155f2ad5a1347ae2c207",

@@ -85,6 +85,10 @@ export class S3GargaeClient {
     return buckets;
   }
 
+  async removeBucket(bucketId: string): Promise<void> {
+    await this.client.DELETE('/bucket', { params: { query: { id: bucketId } } });
+  }
+
   async createBucket(request: CreateBucketRequest) {
     checkRequest(CreateBucketRequestSchema, request);
     const response = await this.client.POST('/bucket', {

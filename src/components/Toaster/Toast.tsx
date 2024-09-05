@@ -1,5 +1,3 @@
-
-
 export interface Toast {
   id: number;
   message: React.ReactNode;
@@ -11,4 +9,3 @@ export enum ToastType {
   Error,
   Success,
 }
-

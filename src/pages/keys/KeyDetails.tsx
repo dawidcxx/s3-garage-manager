@@ -2,7 +2,7 @@ import { s3GarageClient } from '@/api/garage/s3-garage-client';
 import { KeyDetails } from '@/api/garage/s3-garage-client-responses';
 import { useWriteToClipBoard } from '@/components/hooks/use-write-to-clipboard';
 import { IconCopy } from '@/components/icons/IconCopy';
-import { ConfirmationModal, ModalApi } from '@/components/Modal';
+import { ConfirmationModal, ModalApi } from '@/components/ConfirmationModal';
 import { Sheet } from '@/components/Sheet';
 import { Table } from '@/components/table/Table';
 import { ToastType } from '@/components/Toaster/Toast';
@@ -14,7 +14,7 @@ import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-q
 import clsx from 'clsx';
 import React from 'react';
 import { useRef } from 'react';
-import {  useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export function KeyDetailsDisplay() {
   const [search] = useSearchParams();

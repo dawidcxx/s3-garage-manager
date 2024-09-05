@@ -21,7 +21,7 @@ export function CreateKeyForm({ drawerApi }: CreateKeyFormProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { toast } = useToaster();
   const { register, handleSubmit, reset } = useForm<CreateKeyFormState>();
-  
+
   const createKeyMutation = useMutation({
     mutationFn: (data: CreateKeyFormState) => s3GarageClient.createKey(data.name),
     onSuccess: () => {
