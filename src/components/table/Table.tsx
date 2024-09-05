@@ -1,0 +1,74 @@
+import { Title } from '../Title';
+import clsx from 'clsx';
+
+export interface TableProps {
+  children?: React.ReactNode;
+  title?: string;
+  actions?: React.ReactNode;
+  selectable?: boolean;
+}
+
+function Root({ children, title, actions }: TableProps) {
+  return (
+    <div>
+      <div className="flex flex-col">
+        {title && <Title actions={actions}>{title}</Title>}
+        <div className="border-2 border-slate-700 rounded-md">
+          <table className="table">{children}</table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface TableHeadProps {
+  children?: React.ReactNode;
+}
+
+function Head({ children }: TableHeadProps) {
+  return (
+    <thead className="border-b-2 border-b-slate-700">
+      <tr>{children}</tr>
+    </thead>
+  );
+}
+
+interface TableBodyProps {
+  children?: React.ReactNode;
+}
+
+function Body({ children }: TableBodyProps) {
+  return <tbody>{children}</tbody>;
+}
+
+interface TableRowProps {
+  children?: React.ReactNode;
+  onSelected?: () => void;
+  isSelected?: boolean;
+}
+
+function Row({ children, onSelected, isSelected = false }: TableRowProps) {
+  return (
+    <tr className={clsx('cursor-pointer hover:bg-base-200', isSelected && 'bg-base-200')} onClick={onSelected}>
+      {children}
+    </tr>
+  );
+}
+
+interface TableCellProps {
+  children?: React.ReactNode;
+}
+
+function Cell({ children }: TableCellProps) {
+  return <td>{children}</td>;
+}
+
+interface HeaderCellProps {
+  children?: React.ReactNode;
+}
+
+function HeaderCell({ children }: HeaderCellProps) {
+  return <th>{children}</th>;
+}
+
+export const Table = { Root, Head, Body, Row, Cell, HeaderCell };
