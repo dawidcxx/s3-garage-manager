@@ -15,3 +15,12 @@ export class BadRequestError extends ApiError {
     super(`Bad Request: '${message}'`, cause);
   }
 }
+
+export class AlreadyExistsError extends ApiError {
+  constructor(
+    public readonly message: string,
+    public readonly cause: unknown,
+  ) {
+    super(`Already Exists: '${message}'`, cause);
+  }
+}

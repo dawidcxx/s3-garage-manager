@@ -22,7 +22,7 @@ export function BucketCreateForm({ drawerApi }: BucketCreateFormProps) {
       setIsLoading(true);
       await s3GarageClient.createBucket({
         globalAlias: data.globalAliasName,
-        localAlias: {
+        localAlias: data.localAliasName ?  {
           alias: data.localAliasName,
           accessKeyId: data.localAliasKey,
           allow: {
@@ -30,7 +30,7 @@ export function BucketCreateForm({ drawerApi }: BucketCreateFormProps) {
             write: data.localAliasWrite,
             owner: data.localAliasOwner,
           },
-        },
+        } : undefined,
       });
     } catch (e) {
       setErrorMessage(errorToMessage(e));

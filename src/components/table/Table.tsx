@@ -57,10 +57,11 @@ function Row({ children, onSelected, isSelected = false }: TableRowProps) {
 
 interface TableCellProps {
   children?: React.ReactNode;
+  className?: string;
 }
 
-function Cell({ children }: TableCellProps) {
-  return <td>{children}</td>;
+function Cell({ children, className }: TableCellProps) {
+  return <td className={className}>{children}</td>;
 }
 
 interface HeaderCellProps {

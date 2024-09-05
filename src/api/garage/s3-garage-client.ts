@@ -6,9 +6,13 @@ import { paths } from './garage-schema';
 import {
   BucketListItem,
   BucketListItemsSchema,
+  ClusterDetails,
+  ClusterDetailsSchema,
   CreateBucketResponseSchema,
   CreatedKey,
   CreatedKeySchema,
+  HealthReportResponse,
+  HealthReportResponseSchema,
   KeyDetails,
   KeyDetailsSchema,
   KeyListItem,
@@ -33,6 +37,16 @@ export class S3GargaeClient {
       },
     };
     this.client.use(authMiddleware);
+  }
+
+  async getHealthCheckReport(): Promise<HealthReportResponse> {
+    const response = await this.client.GET('/health');
+    return checkResponse(HealthReportResponseSchema, response);
+  }
+
+  async getClusterDetails(): Promise<ClusterDetails> {
+    const response = await this.client.GET('/status');
+    return checkResponse(ClusterDetailsSchema, response);
   }
 
   async removeKey(keyId: string) {

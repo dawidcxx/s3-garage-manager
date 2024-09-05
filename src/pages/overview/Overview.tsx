@@ -1,77 +1,76 @@
+import { s3GarageClient } from '@/api/garage/s3-garage-client';
+import { ClusterDetails, HealthReportResponse } from '@/api/garage/s3-garage-client-responses';
 import { IconCheck } from '@/components/icons/IconCheck';
 import { IconCopy } from '@/components/icons/IconCopy';
+import { IconCross } from '@/components/icons/IconCross';
 import { LongId } from '@/components/LongId';
+import { Table } from '@/components/table/Table';
+import { isNil } from '@/lib/util/isNil';
+import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
+import clsx from 'clsx';
 
 export function Overview() {
+  const [{ data: healthReport }, { data: clusterDetails }] = useSuspenseQueries({
+    queries: [
+      {
+        queryKey: ['healthReport'],
+        queryFn: () => s3GarageClient.getHealthCheckReport(),
+      },
+      {
+        queryKey: ['clusterDetails'],
+        queryFn: () => s3GarageClient.getClusterDetails(),
+      },
+    ],
+  });
+
   return (
     <div className="flex flex-col gap-3">
       <div className="grid lg:grid-cols-2 gap-2">
         <OverviewStat
           metricName="status"
-          metricValue={<div className="text-emerald-500">healthy</div>}
-          metricSecondary="everything seems in order"
+          metricValue={
+            <div
+              className={clsx({
+                'text-emerald-500': healthReport.status === 'healthy',
+                'text-yellow-500': healthReport.status === 'degraded',
+                'text-red-500': healthReport.status === 'unavailable',
+              })}
+            >
+              {healthReport.status}
+            </div>
+          }
+          metricSecondary={healhReportStatusToDescription(healthReport.status)}
           metricIcon={<IconClipboardPulse />}
         />
         <OverviewStat
           metricName="garage version"
-          metricValue={<div className="tracking-widest">v1.0.0</div>}
-          metricSecondary="Rust @ 1.68.0 / ARMx64"
+          metricValue={<div className="tracking-widest">{clusterDetails.garageVersion}</div>}
+          metricSecondary={`Rust @ ${clusterDetails.rustVersion}`}
           metricIcon={<IconInfoCircle />}
         />
         <OverviewStat
-          metricName="nodes"
-          metricValue={<div className="tracking-widest">2/2</div>}
-          metricSecondary="connected nodes / total"
+          metricName="Storage Nodes"
+          metricValue={
+            <div className="tracking-widest">
+              {healthReport.storageNodes} / {healthReport.storageNodesOk}
+            </div>
+          }
+          metricSecondary="connected / total"
           metricIcon={<IconCircleNodes />}
         />
         <OverviewStat
-          metricName="storage nodes"
-          metricValue={<div className="tracking-widest">2/2</div>}
-          metricSecondary="storage nodes / total"
+          metricName="Partitions"
+          metricValue={
+            <div className="tracking-widest">
+              {' '}
+              {healthReport.partitionsAllOk} / {healthReport.partitions}{' '}
+            </div>
+          }
+          metricSecondary="partitions ok / total"
           metricIcon={<IconHarddisk />}
         />
       </div>
-      <div className="flex flex-col overflow-x-auto">
-        <h5 className="text-lg mt-3 mb-2 ml-1">NODES</h5>
-        <div className="border-2 border-slate-700 rounded-md">
-          <table className="table">
-            <thead className="border-b-2 border-b-slate-700">
-              <tr>
-                <th>ID</th>
-                <th>Address</th>
-                <th>Status</th>
-                <th>Last Seen</th>
-                <th>Hostname</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="cursor-pointer hover:bg-base-200">
-                <td>
-                  <div className="flex flex-row justify-start items-center gap-2">
-                    <LongId id="871f97ddca80f859a167756756728fb2b875a527" className="flex-grow" />
-                    <button className="btn btn-circle btn-xs btn-ghost">
-                      <IconCopy />
-                    </button>
-                  </div>
-                </td>
-                <td>
-                  <div className="flex flex-row justify-start items-center gap-2">
-                    <span className="flex-grow">10.0.0.11:3901</span>
-                    <button className="btn btn-circle btn-xs btn-ghost">
-                      <IconCopy />
-                    </button>
-                  </div>
-                </td>
-                <td>
-                  <IconCheck />
-                </td>
-                <td>{'<'} 1 minute ago </td>
-                <td>orion</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <OverviewNodesTable clusterDetails={clusterDetails} />
     </div>
   );
 }
@@ -88,7 +87,7 @@ export function OverviewStat({ metricName, metricSecondary, metricValue, metricI
     <div className="inline-block">
       <div className=" p-4 rounded-lg flex flex-row  shadow-md bg-zinc-900">
         <div className="flex flex-col flex-grow mr-12">
-          <div className=" text-sm lowercase mb-1">{metricName}</div>
+          <div className=" text-sm lowercase mb-1 tracking-wide font-semibold">{metricName}</div>
           <div className="text-primary text-xl tracking-wide uppercase font-bold">{metricValue}</div>
           <div className="text-xs text-slate-500">{metricSecondary}</div>
         </div>
@@ -109,6 +108,41 @@ function IconClipboardPulse() {
         />
       </svg>
     </div>
+  );
+}
+
+function OverviewNodesTable(props: { clusterDetails: ClusterDetails }) {
+  const { clusterDetails } = props;
+  return (
+    <Table.Root title="nodes">
+      <Table.Head>
+        <Table.HeaderCell>ID</Table.HeaderCell>
+        <Table.HeaderCell>Address</Table.HeaderCell>
+        <Table.HeaderCell>Status</Table.HeaderCell>
+        <Table.HeaderCell>Last Seen</Table.HeaderCell>
+        <Table.HeaderCell>Hostname</Table.HeaderCell>
+        <Table.HeaderCell>Available</Table.HeaderCell>
+        <Table.HeaderCell>Total</Table.HeaderCell>
+      </Table.Head>
+      <Table.Body>
+        {clusterDetails.nodes.map((node) => {
+
+          return (
+            <Table.Row key={node.id}>
+              <Table.Cell className="flex flex-row justify-between">
+                {node.id}
+              </Table.Cell>
+              <Table.Cell>{node.addr}</Table.Cell>
+              <Table.Cell>{node.isUp ? <IconCheck /> : <IconCross />}</Table.Cell>
+              <Table.Cell>{isNil(node.lastSeenSecsAgo) ? '-' : `< ${node.lastSeenSecsAgo} seconds ago`}</Table.Cell>
+              <Table.Cell>{node.hostname}</Table.Cell>
+              <Table.Cell>{formatNumberToGBs( node.dataPartition.available)}</Table.Cell>
+              <Table.Cell>{formatNumberToGBs( node.dataPartition.total)}</Table.Cell>
+            </Table.Row>
+          );
+        })}
+      </Table.Body>
+    </Table.Root>
   );
 }
 
@@ -135,4 +169,19 @@ function IconInfoCircle() {
       <path d="M464 336a48 48 0 1096 0 48 48 0 10-96 0zm72 112h-48c-4.4 0-8 3.6-8 8v272c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V456c0-4.4-3.6-8-8-8z" />
     </svg>
   );
+}
+
+function healhReportStatusToDescription(status: HealthReportResponse['status']) {
+  switch (status) {
+    case 'healthy':
+      return 'All systems are operational';
+    case 'degraded':
+      return 'Some systems are experiencing issues';
+    case 'unavailable':
+      return 'The system is currently unavailable';
+  }
+}
+
+function formatNumberToGBs(numberInBytes: number) {
+  return `${(numberInBytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
 }
