@@ -66,7 +66,7 @@ export const ConfirmationModal = forwardRef<ModalApi, ModalProps>(({ children, m
     <dialog id={modalId} className="modal" ref={modalRef}>
       <div className="modal-box">
         <h3 className="font-bold text-lg">Are you sure?</h3>
-        <p className="py-4">{children}</p>
+        <div className="py-4">{children}</div>
         <div className="divider" />
         <div className="modal-action">
           <form method="dialog" className="flex flex-row gap-3 justify-end">

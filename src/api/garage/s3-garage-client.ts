@@ -18,6 +18,7 @@ import {
   KeyListItem,
   KeyListItemsSchema,
 } from './s3-garage-client-responses';
+import { z } from 'zod';
 
 export class S3GargaeClient {
   private readonly client: Client<paths>;
@@ -86,7 +87,8 @@ export class S3GargaeClient {
   }
 
   async removeBucket(bucketId: string): Promise<void> {
-    await this.client.DELETE('/bucket', { params: { query: { id: bucketId } } });
+    const reponse = await this.client.DELETE('/bucket', { params: { query: { id: bucketId } } });
+    checkResponse(z.any(), reponse);
   }
 
   async createBucket(request: CreateBucketRequest) {

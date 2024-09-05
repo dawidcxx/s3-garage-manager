@@ -3,7 +3,7 @@ import { toastAtom } from './toastsAtom';
 import { ToastType } from './Toast';
 
 let toastIdSeq = 0;
-const DEFAULT_TIMEOUT = 3000;
+const DEFAULT_TIMEOUT = 10_000;
 
 export function useToaster() {
   const [, setToasts] = useAtom(toastAtom);
