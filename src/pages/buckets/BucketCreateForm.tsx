@@ -6,38 +6,48 @@ import { s3GarageClient } from '@/api/garage/s3-garage-client';
 import { useState } from 'react';
 import { IconSave } from '@/components/icons/IconSave';
 import { errorToMessage } from '@/lib/util/error-to-message';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToaster } from '@/components/Toaster/useToaster';
+import { ToastType } from '@/components/Toaster/Toast';
 
 export interface BucketCreateFormProps {
   drawerApi: React.MutableRefObject<DrawerApi | null>;
 }
 
 export function BucketCreateForm({ drawerApi }: BucketCreateFormProps) {
+  const { toast } = useToaster();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit } = useForm<FormState>();
+  const { register, handleSubmit, reset } = useForm<FormState>();
+  const queryClient = useQueryClient();
 
-  const onSubmit: SubmitHandler<FormState> = async (data) => {
-    try {
-      setErrorMessage(null);
-      setIsLoading(true);
-      await s3GarageClient.createBucket({
+  const createBucketMutation = useMutation({
+    mutationFn: (data: FormState) =>
+      s3GarageClient.createBucket({
         globalAlias: data.globalAliasName,
-        localAlias: data.localAliasName ?  {
-          alias: data.localAliasName,
-          accessKeyId: data.localAliasKey,
-          allow: {
-            read: data.localAliasRead,
-            write: data.localAliasWrite,
-            owner: data.localAliasOwner,
-          },
-        } : undefined,
-      });
-    } catch (e) {
+        localAlias: data.localAliasName
+          ? {
+              alias: data.localAliasName,
+              accessKeyId: data.localAliasKey,
+              allow: {
+                read: data.localAliasRead,
+                write: data.localAliasWrite,
+                owner: data.localAliasOwner,
+              },
+            }
+          : undefined,
+      }),
+    onSuccess: async () => {
+      setErrorMessage(null);
+      toast('Bucket Created', ToastType.Success);
+      reset();
+      await queryClient.invalidateQueries({ queryKey: ['buckets'] });
+    },
+    onError: (e) => {
       setErrorMessage(errorToMessage(e));
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+  });
+
+  const onSubmit: SubmitHandler<FormState> = (data) => createBucketMutation.mutateAsync(data);
 
   return (
     <Drawer ref={drawerApi}>
@@ -60,9 +70,9 @@ export function BucketCreateForm({ drawerApi }: BucketCreateFormProps) {
           <LabeledCheckbox label="Owner" {...register('localAliasOwner')} />
         </div>
         <div className="divider"></div>
-        <button type="submit" className="btn btn-primary" disabled={isLoading}>
-          {isLoading && <span className="loading loading-spinner w-4 h-4"></span>}
-          {!isLoading && <IconSave />}
+        <button type="submit" className="btn btn-primary" disabled={createBucketMutation.isPending}>
+          {createBucketMutation.isPending && <span className="loading loading-spinner w-4 h-4"></span>}
+          {!createBucketMutation.isPending && <IconSave />}
           CREATE NEW BUCKET
         </button>
       </form>
