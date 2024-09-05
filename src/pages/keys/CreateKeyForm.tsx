@@ -7,7 +7,8 @@ import { s3GarageClient } from '@/api/garage/s3-garage-client';
 import { errorToMessage } from '@/lib/util/error-to-message';
 import { useToaster } from '@/components/Toaster/useToaster';
 import { ToastType } from '@/components/Toaster/Toast';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 
 interface CreateKeyFormState {
   name: string;
@@ -18,15 +19,19 @@ export interface CreateKeyFormProps {
 }
 
 export function CreateKeyForm({ drawerApi }: CreateKeyFormProps) {
+  const [, setUrlSearchParams] = useSearchParams();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { toast } = useToaster();
   const { register, handleSubmit, reset } = useForm<CreateKeyFormState>();
+  const queryClient = useQueryClient();
 
   const createKeyMutation = useMutation({
     mutationFn: (data: CreateKeyFormState) => s3GarageClient.createKey(data.name),
-    onSuccess: () => {
+    onSuccess: async ({ accessKeyId }) => {
       toast(<KeyCreatedAlert />, ToastType.Success);
       reset();
+      await queryClient.invalidateQueries({ queryKey: ['keys'] });
+      setUrlSearchParams({ key: accessKeyId });
     },
     onError: (e) => {
       setErrorMessage(errorToMessage(e));
