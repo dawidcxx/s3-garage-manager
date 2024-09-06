@@ -9,6 +9,8 @@ import { errorToMessage } from '@/lib/util/error-to-message';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToaster } from '@/components/Toaster/useToaster';
 import { ToastType } from '@/components/Toaster/Toast';
+import { isEmptyString } from '@/lib/util/isEmptyString';
+import { CreateBucketRequest } from '@/api/garage/s3-garage-client-requests';
 
 export interface BucketCreateFormProps {
   drawerApi: React.MutableRefObject<DrawerApi | null>;
@@ -21,21 +23,7 @@ export function BucketCreateForm({ drawerApi }: BucketCreateFormProps) {
   const queryClient = useQueryClient();
 
   const createBucketMutation = useMutation({
-    mutationFn: (data: FormState) =>
-      s3GarageClient.createBucket({
-        globalAlias: data.globalAliasName,
-        localAlias: data.localAliasName
-          ? {
-              alias: data.localAliasName,
-              accessKeyId: data.localAliasKey,
-              allow: {
-                read: data.localAliasRead,
-                write: data.localAliasWrite,
-                owner: data.localAliasOwner,
-              },
-            }
-          : undefined,
-      }),
+    mutationFn: (data: FormState) => s3GarageClient.createBucket(formDataToRequest(data)),
     onSuccess: async () => {
       setErrorMessage(null);
       toast('Bucket Created', ToastType.Success);
@@ -50,7 +38,7 @@ export function BucketCreateForm({ drawerApi }: BucketCreateFormProps) {
   const onSubmit: SubmitHandler<FormState> = (data) => createBucketMutation.mutateAsync(data);
 
   return (
-    <Drawer ref={drawerApi}>
+    <Drawer ref={drawerApi} drawerId="BUCKET_CREATE_FORM">
       {errorMessage && (
         <div className="p-2 animate-shake animate-once ">
           <div role="alert" className="alert alert-error break-all text-wrap max-w-96">
@@ -87,4 +75,26 @@ interface FormState {
   localAliasRead: boolean;
   localAliasWrite: boolean;
   localAliasOwner: boolean;
+}
+
+function formDataToRequest(formData: FormState): CreateBucketRequest {
+  const builder: CreateBucketRequest = {};
+
+  if (!isEmptyString(formData.globalAliasName)) {
+    builder.globalAlias = formData.globalAliasName;
+  }
+
+  if (!isEmptyString(formData.localAliasName)) {
+    builder.localAlias = {
+      alias: formData.localAliasName,
+      accessKeyId: formData.localAliasKey,
+      allow: {
+        read: formData.localAliasRead,
+        write: formData.localAliasWrite,
+        owner: formData.localAliasOwner,
+      },
+    };
+  }
+
+  return builder;
 }

@@ -43,7 +43,7 @@ export function CreateKeyForm({ drawerApi }: CreateKeyFormProps) {
   });
 
   return (
-    <Drawer ref={drawerApi}>
+    <Drawer ref={drawerApi} drawerId='CREATE_KEY_FORM'>
       {errorMessage && (
         <div className="p-2 animate-shake animate-once">
           <div role="alert" className="alert alert-error break-all text-wrap max-w-96">

@@ -1,5 +1,10 @@
 import { checkRequest, checkResponse } from '../api-utils';
-import { CreateBucketRequest, CreateBucketRequestSchema } from './s3-garage-client-requests';
+import {
+  AllowKeyToBucketRequest,
+  AllowKeyToBucketRequestSchema,
+  CreateBucketRequest,
+  CreateBucketRequestSchema,
+} from './s3-garage-client-requests';
 import { configService, ConfigService } from '@/config/config-service';
 import createClient, { Client, Middleware } from 'openapi-fetch';
 import { paths } from './garage-schema';
@@ -98,6 +103,14 @@ export class S3GargaeClient {
     });
     const createdBucket = checkResponse(CreateBucketResponseSchema, response);
     return createdBucket;
+  }
+
+  async allowKeyToBucket(request: AllowKeyToBucketRequest): Promise<void> {
+    checkRequest(AllowKeyToBucketRequestSchema, request);
+    const response = await this.client.POST('/bucket/allow', {
+      body: request,
+    });
+    checkResponse(z.any(), response);
   }
 }
 

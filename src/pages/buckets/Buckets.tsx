@@ -89,6 +89,18 @@ export function Buckets() {
                             <IconKey size={'1em'} /> {localAlias.alias}
                           </div>
                           <ul tabIndex={0} className="dropdown-content bg-base-300 rounded-lg z-[1] shadow">
+                            <li className="p-4 flex flex-row gap-3 items-center justify-between">
+                              <div className="flex flex-col">
+                                <span className="font-semibold">Alias Name</span>
+                                <span className="text-zinc-400">{localAlias.alias}</span>
+                              </div>
+                              <button
+                                className="btn btn-xs btn-ghost btn-circle"
+                                onClick={() => writeToClipboard('Access Key ID', localAlias.alias)}
+                              >
+                                <IconCopy />
+                              </button>
+                            </li>
                             <li className="p-4 flex flex-row gap-3 items-center">
                               <div className="flex flex-col">
                                 <span className="font-semibold">Access Key ID</span>

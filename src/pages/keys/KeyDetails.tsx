@@ -15,6 +15,8 @@ import clsx from 'clsx';
 import React from 'react';
 import { useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { DrawerApi } from '@/components/Drawer';
+import { ConnectBucketToKeyForm } from './ConnectBucketToKeyForm';
 
 export function KeyDetailsDisplay() {
   const [search] = useSearchParams();
@@ -115,6 +117,7 @@ function SelectedKeyDetailsActions(props: { keyDetails: KeyDetails }) {
   const { keyDetails } = props;
   const { toast } = useToaster();
   const modalRef = useRef<ModalApi | null>(null);
+  const connectKeyToBucketDrawerApi = useRef<DrawerApi | null>(null);
 
   const queryClient = useQueryClient();
 
@@ -140,8 +143,17 @@ function SelectedKeyDetailsActions(props: { keyDetails: KeyDetails }) {
   }
 
   return (
-    <div className="flex flex-row justify-end">
+    <div className="flex flex-row justify-end gap-3">
       <ConfirmationModal modalId={'REMOVE_KEY_MODAL'} ref={modalRef} />
+      <ConnectBucketToKeyForm drawerApi={connectKeyToBucketDrawerApi} selectedAccessKey={keyDetails} />
+      <button
+        disabled={removeKeyMutation.isPending}
+        className="btn btn-outline btn-xs hover:btn-error"
+        onClick={() => connectKeyToBucketDrawerApi.current?.openDrawer()}
+      >
+        {removeKeyMutation.isPending && <span className="loading loading-spinner w-4 h-4"></span>}
+        ADD BUCKET
+      </button>
       <button
         disabled={removeKeyMutation.isPending}
         className="btn btn-outline btn-xs hover:btn-error"

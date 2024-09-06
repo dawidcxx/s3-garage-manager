@@ -10,9 +10,10 @@ export interface DrawerApi {
 
 export interface DrawerProps {
   children: ReactNode;
+  drawerId: string;
 }
 
-export const Drawer = forwardRef<DrawerApi, DrawerProps>(({ children }: DrawerProps, ref) => {
+export const Drawer = forwardRef<DrawerApi, DrawerProps>(({ children, drawerId }: DrawerProps, ref) => {
   const drawerRef = useRef<HTMLInputElement | null>(null);
 
   useImperativeHandle(ref, () => ({
@@ -46,9 +47,9 @@ export const Drawer = forwardRef<DrawerApi, DrawerProps>(({ children }: DrawerPr
 
   return (
     <div className="drawer drawer-end z-10">
-      <input id="my-drawer-4" type="checkbox" className="drawer-toggle" ref={drawerRef} />
+      <input id={drawerId} type="checkbox" className="drawer-toggle" ref={drawerRef} />
       <div className="drawer-side">
-        <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
+        <label htmlFor={drawerId} aria-label="close sidebar" className="drawer-overlay"></label>
         <div className="menu bg-base-200 text-base-content min-h-full w-96 max-w-96 p-2">{children}</div>
       </div>
     </div>

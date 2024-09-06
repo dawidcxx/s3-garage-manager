@@ -40,7 +40,7 @@ export const LabeledInput = forwardRef<HTMLInputElement, LabeledInputProps>(
         </div>
         <input
           ref={ref}
-          className="input input-bordered"
+          className="input input-bordered disabled:bg-zinc-800 disabled:text-zinc-400"
           onChange={onChange}
           onBlur={onBlur}
           required={required}

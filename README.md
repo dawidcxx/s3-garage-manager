@@ -28,7 +28,7 @@ All features are planned to be implemented at some point. PRs welcome.
 | Get bucket information       | ✅     |      |
 | Delete a bucket              | ✅     |      |
 | Update a bucket              | ❌     |      |
-| Allow key on bucket          | ❌     |      |
+| Allow key on bucket          | ✅     |      |
 | Deny key on bucket           | ❌     |      |
 | Add a global alias to bucket | ❌     |      |
 | Delete a global alias        | ❌     |      |
