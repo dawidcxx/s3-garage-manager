@@ -1,19 +1,19 @@
-import { DrawerApi } from '@/components/Drawer';
-import { Title } from '@/components/Title';
+import { DrawerApi } from '@/lib/components/Drawer';
+import { Title } from '@/lib/components/Title';
 import { Ref, useRef } from 'react';
 import { BucketCreateForm } from './BucketCreateForm';
 import { useMutation, useQueries, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { s3GarageClient } from '@/api/garage/s3-garage-client';
 
-import { Table } from '@/components/table/Table';
-import { IconKey } from '@/components/icons/IconKey';
-import { IconCopy } from '@/components/icons/IconCopy';
-import { useWriteToClipBoard } from '@/components/hooks/use-write-to-clipboard';
-import { IconTrash } from '@/components/icons/IconTrash';
-import { ConfirmationModal, ModalApi } from '@/components/ConfirmationModal';
+import { Table } from '@/lib/components/table/Table';
+import { IconKey } from '@/lib/components/icons/IconKey';
+import { IconCopy } from '@/lib/components/icons/IconCopy';
+import { useWriteToClipBoard } from '@/lib/components/hooks/use-write-to-clipboard';
+import { IconTrash } from '@/lib/components/icons/IconTrash';
+import { ConfirmationModal, ModalApi } from '@/lib/components/ConfirmationModal';
 import { BucketListItem } from '@/api/garage/s3-garage-client-responses';
-import { useToaster } from '@/components/Toaster/useToaster';
-import { ToastType } from '@/components/Toaster/Toast';
+import { useToaster } from '@/lib/components/Toaster/useToaster';
+import { ToastType } from '@/lib/components/Toaster/Toast';
 import { errorToMessage } from '@/lib/util/error-to-message';
 
 export function Buckets() {

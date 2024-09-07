@@ -1,6 +1,6 @@
 import { s3GarageClient } from '@/api/garage/s3-garage-client';
-import { DrawerApi } from '@/components/Drawer';
-import { Table } from '@/components/table/Table';
+import { DrawerApi } from '@/lib/components/Drawer';
+import { Table } from '@/lib/components/table/Table';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createRef } from 'react';
 import { useSearchParams } from 'react-router-dom';

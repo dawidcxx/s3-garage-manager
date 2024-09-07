@@ -1,15 +1,15 @@
-import { Drawer, DrawerApi } from '@/components/Drawer';
-import { useToaster } from '@/components/Toaster/useToaster';
+import { Drawer, DrawerApi } from '@/lib/components/Drawer';
+import { useToaster } from '@/lib/components/Toaster/useToaster';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { LabeledInput } from '../buckets/LabeledInput';
-import { IconSave } from '@/components/icons/IconSave';
+import { LabeledInput } from '../../lib/components/form/LabeledInput';
+import { IconSave } from '@/lib/components/icons/IconSave';
 import { KeyDetails } from '@/api/garage/s3-garage-client-responses';
-import { LabeledCheckbox } from '../buckets/LabeledCheckbox';
+import { LabeledCheckbox } from '../../lib/components/form/LabeledCheckbox';
 import { s3GarageClient } from '@/api/garage/s3-garage-client';
 import { errorToMessage } from '@/lib/util/error-to-message';
-import { ToastType } from '@/components/Toaster/Toast';
+import { ToastType } from '@/lib/components/Toaster/Toast';
 
 export function ConnectBucketToKeyForm(props: {
   selectedAccessKey: KeyDetails;

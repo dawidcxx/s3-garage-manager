@@ -103,44 +103,27 @@ export const ClusterDetailsSchema = z.object({
 
 export type ClusterDetails = z.infer<typeof ClusterDetailsSchema>;
 
-// {
-//   "node": "f09e1c6d4bd1baa989738aa4d105d2fb7eed6d5b4d84155f2ad5a1347ae2c207",
-//   "garageVersion": "v1.0.0",
-//   "garageFeatures": [
-//     "k2v",
-//     "lmdb",
-//     "sqlite",
-//     "consul-discovery",
-//     "kubernetes-discovery",
-//     "metrics",
-//     "telemetry-otlp",
-//     "bundled-libs"
-//   ],
-//   "rustVersion": "1.73.0",
-//   "dbEngine": "sqlite3 v3.45.0 (using rusqlite crate)",
-//   "layoutVersion": 1,
-//   "nodes": [
-//     {
-//       "id": "f09e1c6d4bd1baa989738aa4d105d2fb7eed6d5b4d84155f2ad5a1347ae2c207",
-//       "role": {
-//         "id": "f09e1c6d4bd1baa989738aa4d105d2fb7eed6d5b4d84155f2ad5a1347ae2c207",
-//         "zone": "eu-central-1",
-//         "capacity": 8000000000,
-//         "tags": []
-//       },
-//       "addr": "127.0.0.1:3901",
-//       "hostname": "ubuntu-4gb-nbg1-2",
-//       "isUp": true,
-//       "lastSeenSecsAgo": null,
-//       "draining": false,
-//       "dataPartition": {
-//         "available": 21925896192,
-//         "total": 39973924864
-//       },
-//       "metadataPartition": {
-//         "available": 21925896192,
-//         "total": 39973924864
-//       }
-//     }
-//   ]
-// }
+
+export const LayoutDescriptionSchema = z.object({
+  version: z.number(),
+  roles: z.array(
+    z.object({
+      id: z.string(),
+      zone: z.string(),
+      capacity: z.number(),
+      tags: z.array(z.string()),
+    }),
+  ),
+  stagedRoleChanges: z.array(
+    z.object({
+      id: z.string(),
+      zone: z.string(),
+      capacity: z.number(),
+      tags: z.array(z.string()),
+      remove: z.boolean().optional(),
+    }),
+  ),
+})    
+
+export type LayoutDescription = z.infer<typeof LayoutDescriptionSchema>;
+

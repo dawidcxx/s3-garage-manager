@@ -1,14 +1,14 @@
-import { Drawer, DrawerApi } from '@/components/Drawer';
-import { LabeledCheckbox } from './LabeledCheckbox';
-import { LabeledInput } from './LabeledInput';
+import { Drawer, DrawerApi } from '@/lib/components/Drawer';
+import { LabeledCheckbox } from '../../lib/components/form/LabeledCheckbox';
+import { LabeledInput } from '../../lib/components/form/LabeledInput';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { s3GarageClient } from '@/api/garage/s3-garage-client';
 import { useState } from 'react';
-import { IconSave } from '@/components/icons/IconSave';
+import { IconSave } from '@/lib/components/icons/IconSave';
 import { errorToMessage } from '@/lib/util/error-to-message';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useToaster } from '@/components/Toaster/useToaster';
-import { ToastType } from '@/components/Toaster/Toast';
+import { useToaster } from '@/lib/components/Toaster/useToaster';
+import { ToastType } from '@/lib/components/Toaster/Toast';
 import { isEmptyString } from '@/lib/util/isEmptyString';
 import { CreateBucketRequest } from '@/api/garage/s3-garage-client-requests';
 

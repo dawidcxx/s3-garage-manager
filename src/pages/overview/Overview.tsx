@@ -1,12 +1,11 @@
 import { s3GarageClient } from '@/api/garage/s3-garage-client';
 import { ClusterDetails, HealthReportResponse } from '@/api/garage/s3-garage-client-responses';
-import { IconCheck } from '@/components/icons/IconCheck';
-import { IconCopy } from '@/components/icons/IconCopy';
-import { IconCross } from '@/components/icons/IconCross';
-import { LongId } from '@/components/LongId';
-import { Table } from '@/components/table/Table';
+import { IconCheck } from '@/lib/components/icons/IconCheck';
+import { IconCross } from '@/lib/components/icons/IconCross';
+import { Table } from '@/lib/components/table/Table';
+import { formatNumberToGBs } from '@/lib/util/format-number-to-GBs';
 import { isNil } from '@/lib/util/isNil';
-import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import clsx from 'clsx';
 
 export function Overview() {
@@ -177,8 +176,4 @@ function healhReportStatusToDescription(status: HealthReportResponse['status']) 
     case 'unavailable':
       return 'The system is currently unavailable';
   }
-}
-
-function formatNumberToGBs(numberInBytes: number) {
-  return `${(numberInBytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
 }

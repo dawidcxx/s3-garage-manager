@@ -4,6 +4,8 @@ import {
   AllowKeyToBucketRequestSchema,
   CreateBucketRequest,
   CreateBucketRequestSchema,
+  UpdateLayout,
+  UpdateLayoutSchema,
 } from './s3-garage-client-requests';
 import { configService, ConfigService } from '@/config/config-service';
 import createClient, { Client, Middleware } from 'openapi-fetch';
@@ -22,6 +24,8 @@ import {
   KeyDetailsSchema,
   KeyListItem,
   KeyListItemsSchema,
+  LayoutDescription,
+  LayoutDescriptionSchema,
 } from './s3-garage-client-responses';
 import { z } from 'zod';
 
@@ -110,6 +114,17 @@ export class S3GargaeClient {
     const response = await this.client.POST('/bucket/allow', {
       body: request,
     });
+    checkResponse(z.any(), response);
+  }
+
+  async getCurrentLayout(): Promise<LayoutDescription> {
+    const response = await this.client.GET('/layout');
+    return checkResponse(LayoutDescriptionSchema, response);
+  }
+
+  async updateLayout(updates: UpdateLayout): Promise<void> {
+    checkRequest(UpdateLayoutSchema, updates);
+    const response = await this.client.POST('/layout', { body: updates });
     checkResponse(z.any(), response);
   }
 }

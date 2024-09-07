@@ -2,8 +2,8 @@ import clsx from 'clsx';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import GarageLogoImage from '@/assets/garage-logo-horizontal.svg';
 import { Suspense } from 'react';
-import { IconKey } from './components/icons/IconKey';
-import { Toaster } from './components/Toaster/Toaster';
+import { IconKey } from './lib/components/icons/IconKey';
+import { Toaster } from './lib/components/Toaster/Toaster';
 
 export function App() {
   return (

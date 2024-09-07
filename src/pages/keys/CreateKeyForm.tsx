@@ -1,12 +1,12 @@
-import { Drawer, DrawerApi } from '@/components/Drawer';
+import { Drawer, DrawerApi } from '@/lib/components/Drawer';
 import { useForm } from 'react-hook-form';
-import { LabeledInput } from '../buckets/LabeledInput';
-import { IconSave } from '@/components/icons/IconSave';
+import { LabeledInput } from '../../lib/components/form/LabeledInput';
+import { IconSave } from '@/lib/components/icons/IconSave';
 import { useState } from 'react';
 import { s3GarageClient } from '@/api/garage/s3-garage-client';
 import { errorToMessage } from '@/lib/util/error-to-message';
-import { useToaster } from '@/components/Toaster/useToaster';
-import { ToastType } from '@/components/Toaster/Toast';
+import { useToaster } from '@/lib/components/Toaster/useToaster';
+import { ToastType } from '@/lib/components/Toaster/Toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 

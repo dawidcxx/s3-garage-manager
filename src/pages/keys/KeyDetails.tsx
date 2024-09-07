@@ -1,12 +1,12 @@
 import { s3GarageClient } from '@/api/garage/s3-garage-client';
 import { KeyDetails } from '@/api/garage/s3-garage-client-responses';
-import { useWriteToClipBoard } from '@/components/hooks/use-write-to-clipboard';
-import { IconCopy } from '@/components/icons/IconCopy';
-import { ConfirmationModal, ModalApi } from '@/components/ConfirmationModal';
-import { Sheet } from '@/components/Sheet';
-import { Table } from '@/components/table/Table';
-import { ToastType } from '@/components/Toaster/Toast';
-import { useToaster } from '@/components/Toaster/useToaster';
+import { useWriteToClipBoard } from '@/lib/components/hooks/use-write-to-clipboard';
+import { IconCopy } from '@/lib/components/icons/IconCopy';
+import { ConfirmationModal, ModalApi } from '@/lib/components/ConfirmationModal';
+import { Sheet } from '@/lib/components/Sheet';
+import { Table } from '@/lib/components/table/Table';
+import { ToastType } from '@/lib/components/Toaster/Toast';
+import { useToaster } from '@/lib/components/Toaster/useToaster';
 import { errorToMessage } from '@/lib/util/error-to-message';
 import { isNil } from '@/lib/util/isNil';
 import { requireNotNull } from '@/lib/util/require-not-null';
@@ -15,7 +15,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { DrawerApi } from '@/components/Drawer';
+import { DrawerApi } from '@/lib/components/Drawer';
 import { ConnectBucketToKeyForm } from './ConnectBucketToKeyForm';
 
 export function KeyDetailsDisplay() {

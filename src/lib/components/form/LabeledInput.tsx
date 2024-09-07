@@ -1,10 +1,12 @@
-import { IconInfo } from '@/components/icons/IconInfo';
+import { IconInfo } from '@/lib/components/icons/IconInfo';
 import { forwardRef } from 'react';
 import { UseFormRegisterReturn } from 'react-hook-form';
 
 export interface LabeledInputProps extends UseFormRegisterReturn {
   label: string;
+  labelAlt?: React.ReactNode;
   tooltip?: string;
+  type?: 'text' | 'number' | 'email' | 'password';
 }
 
 export const LabeledInput = forwardRef<HTMLInputElement, LabeledInputProps>(
@@ -12,6 +14,8 @@ export const LabeledInput = forwardRef<HTMLInputElement, LabeledInputProps>(
     {
       label,
       tooltip,
+      type,
+      labelAlt,
 
       name,
       onBlur,
@@ -41,6 +45,7 @@ export const LabeledInput = forwardRef<HTMLInputElement, LabeledInputProps>(
         <input
           ref={ref}
           className="input input-bordered disabled:bg-zinc-800 disabled:text-zinc-400"
+          type={type}
           onChange={onChange}
           onBlur={onBlur}
           required={required}
@@ -52,6 +57,11 @@ export const LabeledInput = forwardRef<HTMLInputElement, LabeledInputProps>(
           min={min}
           pattern={pattern}
         />
+        {labelAlt && (
+          <div className="label">
+            <span className="label-text-alt">{labelAlt}</span>
+          </div>
+        )}
       </label>
     );
   },
