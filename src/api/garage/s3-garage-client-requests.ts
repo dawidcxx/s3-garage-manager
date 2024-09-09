@@ -37,9 +37,16 @@ export const UpdateLayoutSchema = z.array(
     zone: z.string(),
     capacity: z.number(),
     tags: z.array(z.string()),
-    remove: z.boolean().optional(),
   }),
 );
 
 export type UpdateLayout = z.infer<typeof UpdateLayoutSchema>;
 
+export const RemoveLayoutNodeSchema = z.array(
+  z.object({
+    id: z.string(),
+    remove: z.boolean(),
+  }),
+);
+
+export type RemoveLayoutNode = z.infer<typeof RemoveLayoutNodeSchema>;

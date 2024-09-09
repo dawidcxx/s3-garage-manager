@@ -23,7 +23,6 @@ export function ConnectBucketToKeyForm(props: {
 
   const mutation = useMutation({
     mutationFn: (data: ConnectBucketToKeyFormState) => {
-      console.log('data', data);
       return s3GarageClient.allowKeyToBucket({
         accessKeyId: data.accessKeyId,
         bucketId: data.bucketId,

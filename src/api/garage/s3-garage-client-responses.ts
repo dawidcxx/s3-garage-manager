@@ -1,5 +1,3 @@
-import { access } from 'fs';
-import { permission } from 'process';
 import { z } from 'zod';
 
 export const BucketListItemSchema = z.object({
@@ -83,26 +81,29 @@ export const ClusterDetailsSchema = z.object({
   nodes: z.array(
     z.object({
       id: z.string(),
-      addr: z.string(),
+      addr: z.string().nullable(),
       isUp: z.boolean(),
       lastSeenSecsAgo: z.number().nullable(),
-      hostname: z.string(),
-      dataPartition: z.object({
-        available: z.number(),
-        total: z.number(),
-      }),
-      role: z.object({
-        id: z.string(),
-        zone: z.string(),
-        capacity: z.number(),
-        tags: z.array(z.string()),
-      }),
+      hostname: z.string().nullable(),
+      dataPartition: z
+        .object({
+          available: z.number(),
+          total: z.number(),
+        })
+        .optional(),
+      role: z
+        .object({
+          id: z.string(),
+          zone: z.string(),
+          capacity: z.number(),
+          tags: z.array(z.string()),
+        })
+        .nullable(),
     }),
   ),
 });
 
 export type ClusterDetails = z.infer<typeof ClusterDetailsSchema>;
-
 
 export const LayoutDescriptionSchema = z.object({
   version: z.number(),
@@ -117,13 +118,14 @@ export const LayoutDescriptionSchema = z.object({
   stagedRoleChanges: z.array(
     z.object({
       id: z.string(),
-      zone: z.string(),
-      capacity: z.number(),
-      tags: z.array(z.string()),
-      remove: z.boolean().optional(),
+
+      zone: z.string().optional(),
+      capacity: z.number().optional(),
+      tags: z.array(z.string()).optional(),
+
+      remove: z.boolean().optional()
     }),
   ),
-})    
+});
 
 export type LayoutDescription = z.infer<typeof LayoutDescriptionSchema>;
-

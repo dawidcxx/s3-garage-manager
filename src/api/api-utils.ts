@@ -1,6 +1,13 @@
 import { FetchResponse } from 'openapi-fetch';
 import { isNil } from '@/lib/util/isNil';
-import { AlreadyExistsError, ApiError, BadRequestError } from '@/lib/errors';
+import {
+  AlreadyExistsError,
+  ApiError,
+  BadRequestError,
+  ForbiddenError,
+  InvalidReponse,
+  ServerError,
+} from '@/lib/errors';
 import { requireNotNull } from '@/lib/util/require-not-null';
 import { isString } from '@/lib/util/is-string';
 
@@ -17,6 +24,14 @@ export function checkResponse<T>(schema: Zod.ZodSchema<T>, { response, data, err
       throw new AlreadyExistsError(msg, error);
     }
 
+    if (response.status === 403 && isString(msg)) {
+      throw new ForbiddenError(msg, error);
+    }
+
+    if (response.status > 500) {
+      throw new ServerError('Server error', error);
+    }
+
     throw new ApiError('Recevied error response', error);
   }
 
@@ -25,7 +40,7 @@ export function checkResponse<T>(schema: Zod.ZodSchema<T>, { response, data, err
   const validatedData = schema.safeParse(dataRaw);
 
   if (!validatedData.success) {
-    throw new ApiError('Invalid response', JSON.stringify(validatedData.error.errors, null, 2));
+    throw new InvalidReponse('Invalid response', JSON.stringify(validatedData.error.errors, null, 2));
   }
 
   return validatedData.data;

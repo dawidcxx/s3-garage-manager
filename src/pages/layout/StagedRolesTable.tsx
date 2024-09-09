@@ -4,18 +4,75 @@ import { formatNumberToGBs } from '@/lib/util/format-number-to-GBs';
 import { RoleTags } from './RoleTags';
 import { requireNotNull } from '@/lib/util/require-not-null';
 import clsx from 'clsx';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { s3GarageClient } from '@/api/garage/s3-garage-client';
+import { useToaster } from '@/lib/components/Toaster/useToaster';
+import { ToastType } from '@/lib/components/Toaster/Toast';
+import { errorToMessage } from '@/lib/util/error-to-message';
+import { ConfirmationModal, ModalApi } from '@/lib/components/ConfirmationModal';
+import { useRef } from 'react';
 
 export function StagedRolesTable(props: { layoutDescription: LayoutDescription }) {
+  const { toast } = useToaster();
+  const queryClient = useQueryClient();
+  const discardLayoutMutation = useMutation({
+    mutationFn: (nextLayoutVersion: number) => s3GarageClient.discardLayout(nextLayoutVersion),
+    onSuccess: () => {
+      toast(<div>Layout changes discarded</div>);
+      queryClient.invalidateQueries({ queryKey: ['layout'] });
+    },
+    onError: (e) => {
+      const errorMessage = errorToMessage(e);
+      toast(<div>Failed to discard layout changes: {errorMessage}</div>, ToastType.Error);
+    },
+  });
+
+  const applyLayoutMutation = useMutation({
+    mutationFn: (nextLayoutVersion: number) => s3GarageClient.applyLayout(nextLayoutVersion),
+    onSuccess: () => {
+      toast(<div>Layout changes applied</div>);
+      queryClient.invalidateQueries({ queryKey: ['layout'] });
+    },
+    onError: (e) => {
+      const errorMessage = errorToMessage(e);
+      toast(<div>Failed to apply layout changes: {errorMessage}</div>, ToastType.Error);
+    },
+  });
+  const confirmStagedRolesActionModal = useRef<ModalApi | null>(null);
+
   const { layoutDescription } = props;
   const { addedRoles, removedRoes, updatedRoles } = mapRoleChanges(layoutDescription);
   const hasAnyStagedChanges = layoutDescription.stagedRoleChanges.length > 0;
 
   return (
     <div className="flex flex-col ">
+      <ConfirmationModal modalId={'CONFIRM_STAGED_ROLE_ACTION'} ref={confirmStagedRolesActionModal}>
+        Confirming will apply all the currently staged role changes, this action cannot be undone.
+      </ConfirmationModal>
       <h5 className="text-lg mt-3 mb-2 ml-1 flex flex-row items-center gap-2">
         <span className="flex-grow">STAGED ROLES</span>
-        <button className="btn btn-outline btn-xs hover:btn-error">DISCARD</button>
-        <button className="btn btn-xs btn-primary ">APPLY</button>
+        <button
+          className="btn btn-outline btn-xs hover:btn-error"
+          disabled={!hasAnyStagedChanges || discardLayoutMutation.isPending}
+          onClick={() => {
+            discardLayoutMutation.mutate(layoutDescription.version + 1);
+          }}
+        >
+          DISCARD
+        </button>
+        <button
+          className="btn btn-xs btn-primary"
+          disabled={!hasAnyStagedChanges || applyLayoutMutation.isPending}
+          onClick={() => {
+            confirmStagedRolesActionModal.current?.open().then((confirmed) => {
+              if (confirmed) {
+                applyLayoutMutation.mutate(layoutDescription.version + 1);
+              }
+            });
+          }}
+        >
+          APPLY
+        </button>
       </h5>
       <div
         className={clsx('border border-dashed  p-4 flex flex-col gap-2', { 'border-gray-500': !hasAnyStagedChanges })}
@@ -172,19 +229,31 @@ function mapRoleChanges(layoutDescription: LayoutDescription) {
   const updatedRoles: StagedRoleUpdated[] = [];
 
   for (const stagedRole of layoutDescription.stagedRoleChanges) {
-    if (stagedRole.remove) {
-      removedRoes.push({ type: 'deleted', role: stagedRole });
+    if (stagedRole.remove === true) {
+      const role = layoutDescription.roles.find((role) => role.id === stagedRole.id);
+      removedRoes.push({ type: 'deleted', role: requireNotNull(role, 'role') });
       continue;
     }
-    if (!currentRolesSet.has(stagedRole.id)) {
-      addedRoles.push({ type: 'added', role: stagedRole });
+
+    const role = {
+      id: stagedRole.id,
+      zone: requireNotNull(stagedRole.zone, 'zone'),
+      capacity: requireNotNull(stagedRole.capacity, 'capacity'),
+      tags: stagedRole.tags ?? [],
+    };
+
+    if (currentRolesSet.has(stagedRole.id)) {
+      const currentRole = requireNotNull(
+        layoutDescription.roles.find((role) => role.id === stagedRole.id),
+        'currentRole',
+      );
+      updatedRoles.push({ type: 'updated', before: currentRole, after: role });
       continue;
     }
-    const currentRole = requireNotNull(
-      layoutDescription.roles.find((role) => role.id === stagedRole.id),
-      'currentRole',
-    );
-    updatedRoles.push({ type: 'updated', before: currentRole, after: stagedRole });
+
+    addedRoles.push({ type: 'added', role });
+    
+   
   }
 
   return { removedRoes, addedRoles, updatedRoles };

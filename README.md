@@ -13,10 +13,10 @@ All features are planned to be implemented at some point. PRs welcome.
 | Cluster health report        | ✅     |      |
 | Describe cluster             | ✅     |      |
 | Connect a new node           | ❌     |      |
-| Details on current layout    | ❌     |      |
-| Send modifications to layout | ❌     |      |
-| Apply staged layout          | ❌     |      |
-| Clear staged layout          | ❌     |      |
+| Details on current layout    | ✅     |      |
+| Send modifications to layout | ⏳     |      |
+| Apply staged layout          | ✅     |      |
+| Clear staged layout          | ✅     |      |
 | List all keys                | ✅     |      |
 | Create a new API key         | ✅     |      |
 | Get key information          | ✅     |      |
@@ -34,3 +34,5 @@ All features are planned to be implemented at some point. PRs welcome.
 | Delete a global alias        | ❌     |      |
 | Add a local alias to bucket  | ❌     |      |
 | Delete a local alias         | ❌     |      |
+
+<strong>Overall assessment</strong>: Functional for basic operations.

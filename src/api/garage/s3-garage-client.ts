@@ -4,6 +4,8 @@ import {
   AllowKeyToBucketRequestSchema,
   CreateBucketRequest,
   CreateBucketRequestSchema,
+  RemoveLayoutNode,
+  RemoveLayoutNodeSchema,
   UpdateLayout,
   UpdateLayoutSchema,
 } from './s3-garage-client-requests';
@@ -39,7 +41,7 @@ export class S3GargaeClient {
     });
     const authMiddleware: Middleware = {
       onRequest({ request }) {
-        request.headers.set('Authorization', `Bearer d06wit4G1EZ36AK+ba3kkWCSjiXbQd91kr8iyPAkak4=`);
+        request.headers.set('Authorization', ``);
         return request;
       },
       onResponse({ response }) {
@@ -125,6 +127,22 @@ export class S3GargaeClient {
   async updateLayout(updates: UpdateLayout): Promise<void> {
     checkRequest(UpdateLayoutSchema, updates);
     const response = await this.client.POST('/layout', { body: updates });
+    checkResponse(z.any(), response);
+  }
+
+  async discardLayout(nextVersion: number): Promise<void> {
+    const response = await this.client.POST('/layout/revert', { body: { version: nextVersion } });
+    checkResponse(z.any(), response);
+  }
+
+  async applyLayout(nextVersion: number): Promise<void> {
+    const response = await this.client.POST('/layout/apply', { body: { version: nextVersion } });
+    checkResponse(z.any(), response);
+  }
+
+  async removeLayoutNode(toRemove: RemoveLayoutNode): Promise<void> {
+    checkRequest(RemoveLayoutNodeSchema, toRemove);
+    const response = await this.client.POST('/layout', { body: toRemove });
     checkResponse(z.any(), response);
   }
 }

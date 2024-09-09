@@ -1,23 +1,25 @@
 import { IconInfo } from '@/lib/components/icons/IconInfo';
 import { uniq } from '@/lib/util/uniq';
 import { forwardRef, useState } from 'react';
-import { UseFormRegisterReturn } from 'react-hook-form';
 import { IconCross } from '../icons/IconCross';
 
-export interface LabeledTagsInputProps extends Pick<UseFormRegisterReturn, 'disabled' | 'onBlur' | 'name'> {
+export interface LabeledTagsInputProps {
   label: string;
   labelAlt?: React.ReactNode;
   tooltip?: string;
 
-  onChange(tags: string[]): void;
+  onBlur?:  () => void;
+  disabled?: boolean;
+  name: string;
+  onChange: (tags: string[]) => void;
   value: string[];
 }
 
 export const LabeledTagsInput = forwardRef<HTMLInputElement, LabeledTagsInputProps>(
   ({ label, tooltip, labelAlt, onBlur, onChange, disabled, name, value: valueFromProps }, ref) => {
-    const value = valueFromProps ?? []; // sometimes hooked-form sends-in undefined...
+    const value = valueFromProps || []; // sometimes hooked-form sends-in undefined...
     const [textFieldState, setTextFieldState] = useState('');
-    console.log('value', value);
+
     return (
       <div>
         <label className="form-control w-full">
@@ -32,7 +34,6 @@ export const LabeledTagsInput = forwardRef<HTMLInputElement, LabeledTagsInputPro
             </span>
           </div>
           <input
-            ref={ref}
             className="input input-bordered disabled:bg-zinc-800 disabled:text-zinc-400"
             type="text"
             onKeyDown={(e) => {
@@ -41,7 +42,7 @@ export const LabeledTagsInput = forwardRef<HTMLInputElement, LabeledTagsInputPro
                 const added = uniq([...value, ...newTags]);
                 onChange(added);
                 setTextFieldState('');
-                e.preventDefault()
+                e.preventDefault();
               }
             }}
             onChange={(e) => setTextFieldState(e.target.value)}
@@ -49,6 +50,7 @@ export const LabeledTagsInput = forwardRef<HTMLInputElement, LabeledTagsInputPro
             onBlur={onBlur}
             name={name}
             disabled={disabled}
+            ref={ref}
           />
           {labelAlt && (
             <div className="label">
@@ -56,13 +58,19 @@ export const LabeledTagsInput = forwardRef<HTMLInputElement, LabeledTagsInputPro
             </div>
           )}
         </label>
-        <div className='flex flex-row flex-wrap mt-2 gap-0.5'>
+        <div className="flex flex-row flex-wrap mt-2 gap-0.5">
           {value.map((tag) => {
             return (
               <div className="badge badge-neutral badge-lg relative pl-7" key={tag}>
-                <button className='btn btn-xs btn-ghost btn-circle absolute left-0' onClick={_ => {
-                  onChange(value.filter(t => t !== tag))
-                }}> <IconCross /> </button>
+                <button
+                type='button'
+                  className="btn btn-xs btn-ghost btn-circle absolute left-0"
+                  onClick={(_) => {
+                    onChange(value.filter((t) => t !== tag));
+                  }}
+                >
+                  <IconCross />
+                </button>
                 {tag}
               </div>
             );

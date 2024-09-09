@@ -1,26 +1,33 @@
+import { ApiError, InvalidReponse, ServerError } from '@/lib/errors';
+import clsx from 'clsx';
 import { isRouteErrorResponse, Link, useRouteError } from 'react-router-dom';
 
 export function RouteErrorPage() {
   const error = useRouteError();
   console.error('RouteErrorPage - caught-error', error);
-
   const notFound = isNotFoundError(error);
 
   return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-md text-center">
-        <div className="mx-auto h-12 w-12 text-primary" />
-        <h1 className="mt-4 text-6xl font-bold tracking-tight text-foreground sm:text-7xl">
-          Oops, something went wrong!
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground">
-          {notFound && "It looks like the page you were looking for doesn't exist"}
-        </p>
-        <div className="mt-6">
-          <Link to={'/'} className="btn btn-primary btn-outline">
-            Go to Homepage
-          </Link>
+    <div className="min-h-[70vh] flex flex-col justify-center items-center">
+      <div className="bg-base-300 shadow-xl max-w-xl p-10 flex flex-col items-center gap-8 mt-8">
+        <h2 className="text-4xl text-primary">
+          Oops! <span className="text-slate-400">something went wrong</span>
+        </h2>
+        <div>
+          {notFound && (
+            <ErrorAlert
+              title={'404 - Not Found'}
+              message={
+                'The page you are looking for does not exist. Please check the URL in the address bar and try again.'
+              }
+              variant={'warn'}
+            />
+          )}
+          <ApiErrorAlert error={error} />
         </div>
+        <Link to={'/'} className="btn btn-primary btn-outline">
+          Go to Homepage
+        </Link>
       </div>
     </div>
   );
@@ -32,4 +39,56 @@ function isNotFoundError(e: unknown) {
   } else {
     return false;
   }
+}
+
+function ApiErrorAlert(props: { error: unknown }) {
+  const { error } = props;
+
+  if (!(error instanceof ApiError)) {
+    return null;
+  }
+
+  if (error instanceof ServerError) {
+    return (
+      <ErrorAlert
+        title={'Server  Error'}
+        message={'Unable to reach the server. Please try again later or check your garage server installation. For more details check browser network console.'}
+        variant={'error'}
+      />
+    );
+  }
+
+  if (error instanceof InvalidReponse) {
+    return <ErrorAlert title="Invalid API Response" message={
+      <div>
+        The server returned a response that could not be understood.
+        <details>
+          <summary>Details</summary>
+          <pre>{error.serializedErrors}</pre>
+        </details>
+      </div>
+    } variant={'error'} />;
+  }
+
+  return <ErrorAlert title="API Errror Response" message={error.message} variant={'error'} />;
+}
+
+interface ErrorAlertProps {
+  title: React.ReactNode;
+  message: React.ReactNode;
+  variant: 'error' | 'warn';
+}
+
+function ErrorAlert({ title = null, message, variant }: ErrorAlertProps) {
+  return (
+    <div
+      className={clsx('alert w-full flex flex-col justify-start items-start gap-1', {
+        'alert-warning': variant === 'warn',
+        'alert-error': variant === 'error',
+      })}
+    >
+      {title && <div className="font-semibold text-lg">{title}</div>}
+      <div>{message}</div>
+    </div>
+  );
 }

@@ -1,9 +1,10 @@
+import React from 'react';
 import { Title } from '../Title';
 import clsx from 'clsx';
 
 export interface TableProps {
   children?: React.ReactNode;
-  title?: string;
+  title?: React.ReactNode;
   actions?: React.ReactNode;
   selectable?: boolean;
 }

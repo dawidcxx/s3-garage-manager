@@ -5,6 +5,7 @@ import { IconCross } from '@/lib/components/icons/IconCross';
 import { Table } from '@/lib/components/table/Table';
 import { formatNumberToGBs } from '@/lib/util/format-number-to-GBs';
 import { isNil } from '@/lib/util/isNil';
+import { mapOptional } from '@/lib/util/mapOptional';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import clsx from 'clsx';
 
@@ -122,9 +123,19 @@ function OverviewNodesTable(props: { clusterDetails: ClusterDetails }) {
         <Table.HeaderCell>Hostname</Table.HeaderCell>
         <Table.HeaderCell>Available</Table.HeaderCell>
         <Table.HeaderCell>Total</Table.HeaderCell>
+        <Table.HeaderCell>Used</Table.HeaderCell>
       </Table.Head>
       <Table.Body>
         {clusterDetails.nodes.map((node) => {
+          const dataTotal = mapOptional(node.dataPartition, (it) => formatNumberToGBs(it.total)) ?? '-';
+          const dataAvailable = mapOptional(node.dataPartition, (it) => formatNumberToGBs(it.available)) ?? '-';
+          const dataUsed =
+            mapOptional(node.dataPartition, (it) => {
+              const differenceInNumber = it.total - it.available;
+              const dataUsedAsPercentage = Math.round((differenceInNumber / it.total) * 100);
+              return `${formatNumberToGBs(differenceInNumber)} (${dataUsedAsPercentage}%)`;
+            }) ?? '-';
+
           return (
             <Table.Row key={node.id}>
               <Table.Cell className="flex flex-row justify-between">{node.id}</Table.Cell>
@@ -132,8 +143,9 @@ function OverviewNodesTable(props: { clusterDetails: ClusterDetails }) {
               <Table.Cell>{node.isUp ? <IconCheck /> : <IconCross />}</Table.Cell>
               <Table.Cell>{isNil(node.lastSeenSecsAgo) ? '-' : `< ${node.lastSeenSecsAgo} seconds ago`}</Table.Cell>
               <Table.Cell>{node.hostname}</Table.Cell>
-              <Table.Cell>{formatNumberToGBs(node.dataPartition.available)}</Table.Cell>
-              <Table.Cell>{formatNumberToGBs(node.dataPartition.total)}</Table.Cell>
+              <Table.Cell>{dataAvailable}</Table.Cell>
+              <Table.Cell>{dataTotal}</Table.Cell>
+              <Table.Cell>{dataUsed}</Table.Cell>
             </Table.Row>
           );
         })}

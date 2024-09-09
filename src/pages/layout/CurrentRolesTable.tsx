@@ -1,4 +1,4 @@
-import { LayoutDescription } from '@/api/garage/s3-garage-client-responses';
+import { ClusterDetails, LayoutDescription } from '@/api/garage/s3-garage-client-responses';
 import { IconCopy } from '@/lib/components/icons/IconCopy';
 import { IconCross } from '@/lib/components/icons/IconCross';
 import { Table } from '@/lib/components/table/Table';
@@ -7,16 +7,39 @@ import { RoleTags } from './RoleTags';
 import { AddRoleForm } from './AddRoleForm';
 import { DrawerApi } from '@/lib/components/Drawer';
 import { useRef } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { s3GarageClient } from '@/api/garage/s3-garage-client';
+import { errorToMessage } from '@/lib/util/error-to-message';
+import { useToaster } from '@/lib/components/Toaster/useToaster';
+import { ToastType } from '@/lib/components/Toaster/Toast';
 
-export function CurrentRolesTable(props: { layoutDescription: LayoutDescription }) {
+export function CurrentRolesTable(props: { layoutDescription: LayoutDescription; clusterDetails: ClusterDetails }) {
+  const { layoutDescription, clusterDetails } = props;
+
   const drawerRef = useRef<DrawerApi | null>(null);
-  const { layoutDescription } = props;
+  const queryClient = useQueryClient();
+  const { toast } = useToaster();
+
+  const removeRoleMutation = useMutation({
+    mutationFn: (roleId: string) => s3GarageClient.removeLayoutNode([{ id: roleId, remove: true }]),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['layout'] });
+    },
+    onError: (e) => {
+      const msg = errorToMessage(e);
+      toast(<div>Failed to stage role removal: '{msg}'</div>, ToastType.Error);
+    },
+  });
 
   return (
     <div>
-      <AddRoleForm drawerApi={drawerRef} />
+      <AddRoleForm drawerApi={drawerRef} clusterDetails={clusterDetails} />
       <Table.Root
-        title="roles"
+        title={
+          <div>
+            roles <span className="text-slate-500 text-xs ml-1 lowercase">v{layoutDescription.version}</span>
+          </div>
+        }
         actions={
           <button
             className="btn btn-outline btn-xs"
@@ -41,10 +64,16 @@ export function CurrentRolesTable(props: { layoutDescription: LayoutDescription 
               <Table.Row key={role.id}>
                 <Table.Cell>
                   <div className="flex flex-row gap-3">
-                    <button className="btn btn-square btn-xs btn-outline">
+                    <button className="btn btn-square btn-xs btn-outline" disabled>
                       <IconEdit />
                     </button>
-                    <button className="btn btn-square btn-xs btn-error btn-outline">
+                    <button
+                      className="btn btn-square btn-xs btn-error btn-outline"
+                      disabled={removeRoleMutation.isPending}
+                      onClick={() => {
+                        removeRoleMutation.mutate(role.id);
+                      }}
+                    >
                       <IconCross />
                     </button>
                   </div>
