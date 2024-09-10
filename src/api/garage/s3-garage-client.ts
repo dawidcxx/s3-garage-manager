@@ -55,7 +55,7 @@ export class S3GargaeClient {
 
   /**
    * Update token to be used for upcoming requests
-   * 
+   *
    * @param token - Token to be used for upcoming requests. Set to null to destroy the stored token
    */
   async setToken(token: string | null) {
@@ -63,7 +63,7 @@ export class S3GargaeClient {
       if (this.authMiddleware) {
         this.client.eject(this.authMiddleware);
       }
-      return
+      return;
     }
 
     if (this.authMiddleware) {

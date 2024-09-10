@@ -1,4 +1,4 @@
-export function RoleTags(props: { tags: string[]; }) {
+export function RoleTags(props: { tags: string[] }) {
   const { tags } = props;
   return (
     <div className="flex flex-row gap-1">

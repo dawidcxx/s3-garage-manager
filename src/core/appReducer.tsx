@@ -1,4 +1,4 @@
-import { assertNever } from "@/lib/util/assert-never";
+import { assertNever } from '@/lib/util/assert-never';
 
 export interface AppState {
   auth: {
@@ -21,12 +21,13 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, ...action.payload };
     }
     case 'CLEAR_TOKEN': {
-      return { ...state, auth: { token: '', saveToLocalStorage: false } };
+      return {
+        auth: { token: '', saveToLocalStorage: true },
+        settings: { defaultAwsRegion: '' },
+      };
     }
     default: {
       assertNever(action);
     }
   }
 }
-
-

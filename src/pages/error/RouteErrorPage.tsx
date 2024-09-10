@@ -15,7 +15,13 @@ export function RouteErrorPage() {
   useLayoutEffect(() => {
     // Due to strict mode will toasts twice
     // but should be fine outside of dev mode
-    toast(<> <strong>Permission Error</strong>: Check your token </>, ToastType.Error)
+    toast(
+      <>
+        {' '}
+        <strong>Permission Error</strong>: Check your token{' '}
+      </>,
+      ToastType.Error,
+    );
     navigate('/settings');
   }, [navigate, toast]);
 

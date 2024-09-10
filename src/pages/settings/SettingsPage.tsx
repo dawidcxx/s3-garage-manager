@@ -19,7 +19,7 @@ export function SettingsPage() {
     });
   }, [reset, appState]);
 
-  const onSubmit = handleSubmit( (data) => {
+  const onSubmit = handleSubmit((data) => {
     appDispatch({
       type: 'UPDATE_APP_SETTINGS',
       payload: {
@@ -32,12 +32,12 @@ export function SettingsPage() {
         },
       },
     });
-    toast('Settings Updated')
+    toast('Settings Updated');
   });
 
   return (
     <div className="max-w-md">
-      <form className="flex flex-col gap-6" onSubmit={onSubmit} autoComplete='off'>
+      <form className="flex flex-col gap-6" onSubmit={onSubmit} autoComplete="off">
         <div tabIndex={0} className="collapse collapse-arrow border-base-300 bg-base-200 border">
           <input type="checkbox" className="peer" defaultChecked />
           <div className="collapse-title text-xl font-medium">Authentication</div>

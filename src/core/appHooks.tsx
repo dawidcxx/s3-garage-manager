@@ -1,12 +1,12 @@
-import { useContext } from "react";
-import { AppContext, AppDispatchContext } from "./appContext";
-import { AppDispatch, AppState } from "./appReducer";
+import { useContext } from 'react';
+import { AppContext, AppDispatchContext } from './appContext';
+import { AppDispatch, AppState } from './appReducer';
 
 export function useAppDispatcher(): AppDispatch {
-    const dispatch = useContext(AppDispatchContext);
-    return dispatch!;
+  const dispatch = useContext(AppDispatchContext);
+  return dispatch!;
 }
 
 export function useAppState(): AppState {
-    return useContext(AppContext);
+  return useContext(AppContext);
 }

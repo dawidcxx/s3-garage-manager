@@ -252,8 +252,6 @@ function mapRoleChanges(layoutDescription: LayoutDescription) {
     }
 
     addedRoles.push({ type: 'added', role });
-    
-   
   }
 
   return { removedRoes, addedRoles, updatedRoles };

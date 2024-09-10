@@ -123,7 +123,7 @@ export const LayoutDescriptionSchema = z.object({
       capacity: z.number().optional(),
       tags: z.array(z.string()).optional(),
 
-      remove: z.boolean().optional()
+      remove: z.boolean().optional(),
     }),
   ),
 });

@@ -8,7 +8,7 @@ export interface LabeledTagsInputProps {
   labelAlt?: React.ReactNode;
   tooltip?: string;
 
-  onBlur?:  () => void;
+  onBlur?: () => void;
   disabled?: boolean;
   name: string;
   onChange: (tags: string[]) => void;
@@ -63,7 +63,7 @@ export const LabeledTagsInput = forwardRef<HTMLInputElement, LabeledTagsInputPro
             return (
               <div className="badge badge-neutral badge-lg relative pl-7" key={tag}>
                 <button
-                type='button'
+                  type="button"
                   className="btn btn-xs btn-ghost btn-circle absolute left-0"
                   onClick={(_) => {
                     onChange(value.filter((t) => t !== tag));

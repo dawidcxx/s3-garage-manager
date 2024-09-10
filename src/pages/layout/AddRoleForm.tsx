@@ -1,5 +1,6 @@
 import { s3GarageClient } from '@/api/garage/s3-garage-client';
 import { ClusterDetails } from '@/api/garage/s3-garage-client-responses';
+import { useAppState } from '@/core/appHooks';
 import { Drawer, DrawerApi } from '@/lib/components/Drawer';
 import { LabeledInput } from '@/lib/components/form/LabeledInput';
 import { LabeledSelect } from '@/lib/components/form/LabeledSelect';
@@ -21,9 +22,17 @@ export interface AddRoleFormProps {
 export function AddRoleForm({ drawerApi, clusterDetails }: AddRoleFormProps) {
   const { toast } = useToaster();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { register, handleSubmit, reset, watch, control } = useForm<FormState>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    control,
+    formState: { isDirty },
+  } = useForm<FormState>({
     defaultValues: { tags: [] },
   });
+
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -39,18 +48,21 @@ export function AddRoleForm({ drawerApi, clusterDetails }: AddRoleFormProps) {
     },
     onSuccess: async () => {
       toast(<div>Addition staged</div>, ToastType.Success);
-      reset();
       await queryClient.invalidateQueries({ queryKey: ['layout'] });
+      reset({ capacity: DEFAULT_CAPACITY, tags: [], zone: appState.settings.defaultAwsRegion, nodeId: '' });
     },
     onError: (e) => {
       setErrorMessage(errorToMessage(e));
     },
   });
 
+  const appState = useAppState();
+
   useEffect(() => {
-    const GIGABYTE_IN_BYTES = 1073741824;
-    reset({ capacity: GIGABYTE_IN_BYTES, tags: [], zone: '' });
-  }, [reset]);
+    if (!isDirty) {
+      reset({ capacity: DEFAULT_CAPACITY, tags: [], zone: appState.settings.defaultAwsRegion, nodeId: '' });
+    }
+  }, [isDirty, appState.settings.defaultAwsRegion, reset]);
 
   const onSubmit = handleSubmit((it) => mutation.mutateAsync(it));
 
@@ -81,6 +93,8 @@ export function AddRoleForm({ drawerApi, clusterDetails }: AddRoleFormProps) {
     </Drawer>
   );
 }
+
+const DEFAULT_CAPACITY = 1073741824; // 1GB
 
 function CapacityInput(props: { register: UseFormRegister<FormState>; watch: UseFormWatch<FormState> }) {
   const { register, watch } = props;
