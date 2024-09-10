@@ -30,9 +30,11 @@ import {
   LayoutDescriptionSchema,
 } from './s3-garage-client-responses';
 import { z } from 'zod';
+import { isNil } from '@/lib/util/isNil';
 
 export class S3GargaeClient {
   private readonly client: Client<paths>;
+  private authMiddleware: Middleware | null = null;
 
   constructor(private readonly configService: ConfigService) {
     this.client = createClient<paths>({
@@ -49,6 +51,37 @@ export class S3GargaeClient {
       },
     };
     this.client.use(authMiddleware);
+  }
+
+  /**
+   * Update token to be used for upcoming requests
+   * 
+   * @param token - Token to be used for upcoming requests. Set to null to destroy the stored token
+   */
+  async setToken(token: string | null) {
+    if (isNil(token)) {
+      if (this.authMiddleware) {
+        this.client.eject(this.authMiddleware);
+      }
+      return
+    }
+
+    if (this.authMiddleware) {
+      this.client.eject(this.authMiddleware);
+    }
+
+    this.authMiddleware = {
+      onRequest({ request }) {
+        if (token) {
+          request.headers.set('Authorization', `Bearer ${token}`);
+        }
+        return request;
+      },
+      onResponse({ response }) {
+        return response;
+      },
+    };
+    this.client.use(this.authMiddleware);
   }
 
   async getHealthCheckReport(): Promise<HealthReportResponse> {

@@ -1,11 +1,23 @@
+import { ToastType } from '@/lib/components/Toaster/Toast';
+import { useToaster } from '@/lib/components/Toaster/useToaster';
 import { ApiError, InvalidReponse, ServerError } from '@/lib/errors';
 import clsx from 'clsx';
-import { isRouteErrorResponse, Link, useRouteError } from 'react-router-dom';
+import { useLayoutEffect } from 'react';
+import { isRouteErrorResponse, Link, useNavigate, useRouteError } from 'react-router-dom';
 
 export function RouteErrorPage() {
+  const navigate = useNavigate();
+  const { toast } = useToaster();
   const error = useRouteError();
   console.error('RouteErrorPage - caught-error', error);
   const notFound = isNotFoundError(error);
+
+  useLayoutEffect(() => {
+    // Due to strict mode will toasts twice
+    // but should be fine outside of dev mode
+    toast(<> <strong>Permission Error</strong>: Check your token </>, ToastType.Error)
+    navigate('/settings');
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-[70vh] flex flex-col justify-center items-center">
@@ -52,22 +64,30 @@ function ApiErrorAlert(props: { error: unknown }) {
     return (
       <ErrorAlert
         title={'Server  Error'}
-        message={'Unable to reach the server. Please try again later or check your garage server installation. For more details check browser network console.'}
+        message={
+          'Unable to reach the server. Please try again later or check your garage server installation. For more details check browser network console.'
+        }
         variant={'error'}
       />
     );
   }
 
   if (error instanceof InvalidReponse) {
-    return <ErrorAlert title="Invalid API Response" message={
-      <div>
-        The server returned a response that could not be understood.
-        <details>
-          <summary>Details</summary>
-          <pre>{error.serializedErrors}</pre>
-        </details>
-      </div>
-    } variant={'error'} />;
+    return (
+      <ErrorAlert
+        title="Invalid API Response"
+        message={
+          <div>
+            The server returned a response that could not be understood.
+            <details>
+              <summary>Details</summary>
+              <pre>{error.serializedErrors}</pre>
+            </details>
+          </div>
+        }
+        variant={'error'}
+      />
+    );
   }
 
   return <ErrorAlert title="API Errror Response" message={error.message} variant={'error'} />;

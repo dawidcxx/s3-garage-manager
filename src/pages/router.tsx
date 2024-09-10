@@ -5,6 +5,7 @@ import { Buckets } from './buckets/Buckets';
 import { Keys } from './keys/Keys';
 import { Layout } from './layout/Layout';
 import { RouteErrorPage } from './error/RouteErrorPage';
+import { SettingsPage } from './settings/SettingsPage';
 
 export const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ export const router = createBrowserRouter([
         index: true,
         element: <Overview />,
       },
+      {
+        path: '/settings',
+        element: <SettingsPage />
+      },  
       {
         path: '/layout',
         element: <Layout />,

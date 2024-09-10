@@ -9,7 +9,7 @@ import { mapOptional } from '@/lib/util/mapOptional';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import clsx from 'clsx';
 
-export function Overview() {
+export function Overview() { 
   const [{ data: healthReport }, { data: clusterDetails }] = useSuspenseQueries({
     queries: [
       {

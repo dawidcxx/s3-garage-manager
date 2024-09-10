@@ -7,6 +7,7 @@ export interface LabeledInputProps extends UseFormRegisterReturn {
   labelAlt?: React.ReactNode;
   tooltip?: string;
   type?: 'text' | 'number' | 'email' | 'password';
+  placeholder?: string;
 }
 
 export const LabeledInput = forwardRef<HTMLInputElement, LabeledInputProps>(
@@ -16,6 +17,7 @@ export const LabeledInput = forwardRef<HTMLInputElement, LabeledInputProps>(
       tooltip,
       type,
       labelAlt,
+      placeholder,
 
       name,
       onBlur,
@@ -56,6 +58,7 @@ export const LabeledInput = forwardRef<HTMLInputElement, LabeledInputProps>(
           minLength={minLength}
           min={min}
           pattern={pattern}
+          placeholder={placeholder}
         />
         {labelAlt && (
           <div className="label">
