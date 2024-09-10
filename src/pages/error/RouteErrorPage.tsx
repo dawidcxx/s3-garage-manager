@@ -1,6 +1,6 @@
 import { ToastType } from '@/lib/components/Toaster/Toast';
 import { useToaster } from '@/lib/components/Toaster/useToaster';
-import { ApiError, InvalidReponse, ServerError } from '@/lib/errors';
+import { ApiError, ForbiddenError, InvalidReponse, ServerError } from '@/lib/errors';
 import clsx from 'clsx';
 import { useLayoutEffect } from 'react';
 import { isRouteErrorResponse, Link, useNavigate, useRouteError } from 'react-router-dom';
@@ -14,16 +14,18 @@ export function RouteErrorPage() {
 
   useLayoutEffect(() => {
     // Due to strict mode will toasts twice
-    // but should be fine outside of dev mode
-    toast(
-      <>
-        {' '}
-        <strong>Permission Error</strong>: Check your token{' '}
-      </>,
-      ToastType.Error,
-    );
-    navigate('/settings');
-  }, [navigate, toast]);
+    // but should be fine outside of dev mode\
+    if (error instanceof ForbiddenError) {
+      toast(
+        <>
+          {' '}
+          <strong>Permission Error</strong>: Check your token{' '}
+        </>,
+        ToastType.Error,
+      );
+      navigate('/settings');
+    }
+  }, [error, navigate, toast]);
 
   return (
     <div className="min-h-[70vh] flex flex-col justify-center items-center">

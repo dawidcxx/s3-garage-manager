@@ -9,6 +9,7 @@ import { APP_INIT_STATE, AppContext, AppDispatchContext } from './core/appContex
 import { s3GarageClient } from './api/garage/s3-garage-client';
 import { useAppDispatcher } from './core/appHooks';
 import { produce } from 'immer';
+import { useQueryClient } from '@tanstack/react-query';
 
 export function App() {
   const [state, dispatch] = useReducer(appReducer, APP_INIT_STATE);
@@ -31,6 +32,8 @@ export function App() {
 function AppLayout() {
   const appDispatch = useAppDispatcher();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   return (
     <div className="flex flex-row">
       <Toaster />
@@ -88,6 +91,7 @@ function AppLayout() {
                     navigate('/settings');
                     appDispatch({ type: 'CLEAR_TOKEN' });
                     e.currentTarget.blur();
+                    queryClient.clear();
                   }}
                 >
                   <IconExit /> Clear Token
