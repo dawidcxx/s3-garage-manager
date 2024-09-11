@@ -14,7 +14,11 @@
           shellHook = ''
               $SHELL
           '';
+
           buildInputs = with pkgs; [
+            git
+            zip
+
             nodejs_22
             pnpm
 

@@ -1,13 +1,13 @@
 import clsx from 'clsx';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
-import GarageLogoImage from '@/assets/garage-logo-horizontal.svg';
+import GarageLogoImage from '@/lib/assets/garage-logo-horizontal.svg';
 import { Suspense, useEffect, useReducer } from 'react';
-import { IconKey } from './lib/components/icons/IconKey';
-import { Toaster } from './lib/components/Toaster/Toaster';
-import { appReducer, AppState } from './core/appReducer';
-import { APP_INIT_STATE, AppContext, AppDispatchContext } from './core/appContext';
-import { s3GarageClient } from './api/garage/s3-garage-client';
-import { useAppDispatcher } from './core/appHooks';
+import { IconKey } from '../lib/components/icons/IconKey';
+import { Toaster } from '../lib/components/Toaster/Toaster';
+import { appReducer, AppState } from '../core/appReducer';
+import { APP_INIT_STATE, AppContext, AppDispatchContext } from '../core/appContext';
+import { s3GarageClient } from '../api/garage/s3-garage-client';
+import { useAppDispatcher } from '../core/appHooks';
 import { produce } from 'immer';
 import { useQueryClient } from '@tanstack/react-query';
 

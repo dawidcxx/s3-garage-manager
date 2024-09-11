@@ -9,7 +9,6 @@ import {
   UpdateLayout,
   UpdateLayoutSchema,
 } from './s3-garage-client-requests';
-import { configService, ConfigService } from '@/config/config-service';
 import createClient, { Client, Middleware } from 'openapi-fetch';
 import { paths } from './garage-schema';
 import {
@@ -31,26 +30,16 @@ import {
 } from './s3-garage-client-responses';
 import { z } from 'zod';
 import { isNil } from '@/lib/util/isNil';
+import { GARAGE_ADMIN_API_URL } from '@/core/appConfig';
 
 export class S3GargaeClient {
   private readonly client: Client<paths>;
   private authMiddleware: Middleware | null = null;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(garageAdminApiUrl: string) {
     this.client = createClient<paths>({
-      baseUrl: this.configService.garageAminApiUrl,
-      cache: 'no-cache',
+      baseUrl: garageAdminApiUrl,
     });
-    const authMiddleware: Middleware = {
-      onRequest({ request }) {
-        request.headers.set('Authorization', ``);
-        return request;
-      },
-      onResponse({ response }) {
-        return response;
-      },
-    };
-    this.client.use(authMiddleware);
   }
 
   /**
@@ -180,4 +169,4 @@ export class S3GargaeClient {
   }
 }
 
-export const s3GarageClient = new S3GargaeClient(configService);
+export const s3GarageClient = new S3GargaeClient(GARAGE_ADMIN_API_URL);

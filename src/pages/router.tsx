@@ -1,4 +1,4 @@
-import { App } from '@/App';
+import { App } from './App';
 import { createBrowserRouter } from 'react-router-dom';
 import { Overview } from './overview/Overview';
 import { Buckets } from './buckets/Buckets';
