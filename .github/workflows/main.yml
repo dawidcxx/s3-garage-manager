@@ -1,0 +1,36 @@
+name: Dev Shell
+
+on:
+  workflow_dispatch:
+      inputs:
+        s3_admin_url:
+          description: 'URL to your S3 Admin API'
+          required: true
+
+jobs:
+  enter-dev-shell:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Nix
+        run: curl -L https://nixos.org/nix/install | sh
+
+      - name: Enter devShell
+        run: |
+          source ~/.nix-profile/etc/profile.d/nix.sh
+          nix develop
+      - name: Install pnpm packages
+        run: |
+          pnpm i
+      - name: Build Application
+        run: |
+          echo "VITE_GARAGE_ADMIN_API_URL=${{ github.event.inputs.s3_admin_url }}" > .env
+          node ./scripts/mk-release.js
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.2.1-node20
+        with:
+          path: release-*.zip
+        
+        
