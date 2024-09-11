@@ -11,7 +11,7 @@ jobs:
   buildzip:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v27
         with:
           nix_path: nixpkgs=channel:nixos-unstable
@@ -19,7 +19,7 @@ jobs:
       - run: nix develop -c pnpm i
       - run: echo "VITE_GARAGE_ADMIN_API_URL=${{ github.event.inputs.s3_admin_url }}" > .env
       - run: nix develop -c node ./scripts/mk-release.js 
-      - uses: actions/upload-artifact@v3.2.1-node20
+      - uses: actions/upload-artifact@4
         with:
           path: release-*.zip
 
