@@ -21,13 +21,13 @@ jobs:
         run: |
           mkdir -p ~/.config/nix
           echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
-          source ~/.nix-profile/etc/profile.d/nix.sh
-          nix develop
       - name: Install pnpm packages
         run: |
+          nix develop
           pnpm i
       - name: Build Application
         run: |
+          nix develop
           echo "VITE_GARAGE_ADMIN_API_URL=${{ github.event.inputs.s3_admin_url }}" > .env
           node ./scripts/mk-release.js
       - name: Upload a Build Artifact
