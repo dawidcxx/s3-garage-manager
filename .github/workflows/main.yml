@@ -19,7 +19,7 @@ jobs:
       - run: nix develop -c pnpm i
       - run: echo "VITE_GARAGE_ADMIN_API_URL=${{ github.event.inputs.s3_admin_url }}" > .env
       - run: nix develop -c node ./scripts/mk-release.js 
-      - uses: actions/upload-artifact@4
+      - uses: actions/upload-artifact@v4
         with:
           path: release-*.zip
 
