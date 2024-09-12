@@ -13,7 +13,7 @@ const client = new QueryClient({
       refetchOnWindowFocus: false,
       retry: false,
       staleTime: 0,
-      gcTime: 0
+      gcTime: 0,
     },
   },
 });
@@ -29,5 +29,3 @@ createRoot(document.getElementById('root')!).render(
     </JotaiProvider>
   </StrictMode>,
 );
-
-

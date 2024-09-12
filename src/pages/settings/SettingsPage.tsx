@@ -23,7 +23,7 @@ export function SettingsPage() {
   }, [reset, auth, dashboardSettings]);
 
   const onSubmit = handleSubmit((data) => {
-    setAuth({  token: data.token, saveToLocalStorage: data.saveTokenToLocalStorage });
+    setAuth({ token: data.token, saveToLocalStorage: data.saveTokenToLocalStorage });
     setDashboardSettings({ defaultAwsRegion: data.suggestedAWSRegion });
     toast('Settings Updated');
   });

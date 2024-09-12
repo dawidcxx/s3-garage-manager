@@ -46,9 +46,9 @@ function Body({ children }: TableBodyProps) {
       {count === 0 && (
         <tr>
           <td colSpan={1000}>
-            <div className='flex flex-col items-center gap-3 pt-1 pb-1'>
-              <IconEmptyTable size='2.5rem' />
-              <div className='font-semibold'>No Items</div>
+            <div className="flex flex-col items-center gap-3 pt-1 pb-1">
+              <IconEmptyTable size="2.5rem" />
+              <div className="font-semibold">No Items</div>
             </div>
           </td>
         </tr>

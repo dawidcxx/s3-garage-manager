@@ -1,9 +1,9 @@
 import path from 'path';
 import { defineConfig, UserConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import { configDotenv } from 'dotenv'
+import { configDotenv } from 'dotenv';
 
-configDotenv()
+configDotenv();
 
 export default function (): UserConfig {
   return defineConfig({
@@ -18,7 +18,7 @@ export default function (): UserConfig {
           secure: false,
         },
       },
-    }, 
+    },
     plugins: [react()],
     resolve: {
       alias: {

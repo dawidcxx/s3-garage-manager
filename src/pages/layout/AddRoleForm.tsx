@@ -58,7 +58,6 @@ export function AddRoleForm({ drawerApi, clusterDetails }: AddRoleFormProps) {
     },
   });
 
-
   useEffect(() => {
     if (!isDirty) {
       reset({ capacity: DEFAULT_CAPACITY, tags: [], zone: dashboardSettings.defaultAwsRegion, nodeId: '' });

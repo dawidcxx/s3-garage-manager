@@ -1,8 +1,7 @@
 import process from 'node:process';
 import { execSync } from 'node:child_process';
-import { dirname, resolve  } from 'node:path'
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
 
 const versionTag = getGitTagOrShortHash();
 console.log(`Building ⚒️ release for version: '${versionTag}'`);
