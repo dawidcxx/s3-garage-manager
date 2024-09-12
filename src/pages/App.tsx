@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import GarageLogoImage from '@/lib/assets/garage-logo-horizontal.svg';
-import { Suspense, useEffect, useReducer } from 'react';
+import { Suspense, useLayoutEffect, useReducer } from 'react';
 import { IconKey } from '../lib/components/icons/IconKey';
 import { Toaster } from '../lib/components/Toaster/Toaster';
 import { appReducer, AppState } from '../core/appReducer';
@@ -14,7 +14,7 @@ import { useQueryClient } from '@tanstack/react-query';
 export function App() {
   const [state, dispatch] = useReducer(appReducer, APP_INIT_STATE);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     s3GarageClient.setToken(state.auth.token);
     syncWithLocalStorage(state);
   }, [state]);
