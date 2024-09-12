@@ -1,42 +1,36 @@
-import { useAppDispatcher, useAppState } from '@/core/appHooks';
+import { authAtom } from '@/core/atoms/authAtom';
+import { dashboardSettingsAtom } from '@/core/atoms/dashboardSettingsAtom';
 import { LabeledCheckbox } from '@/lib/components/form/LabeledCheckbox';
 import { LabeledInput } from '@/lib/components/form/LabeledInput';
 import { useToaster } from '@/lib/components/Toaster/useToaster';
+import { useAtom } from 'jotai';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 export function SettingsPage() {
-  const appState = useAppState();
-  const appDispatch = useAppDispatcher();
+  const [auth, setAuth] = useAtom(authAtom);
+  const [dashboardSettings, setDashboardSettings] = useAtom(dashboardSettingsAtom);
+
   const { register, reset, handleSubmit } = useForm<FormState>();
   const { toast } = useToaster();
 
   useEffect(() => {
     reset({
-      token: appState.auth.token,
-      saveTokenToLocalStorage: appState.auth.saveToLocalStorage,
-      suggestedAWSRegion: appState.settings.defaultAwsRegion,
+      token: auth.token,
+      saveTokenToLocalStorage: auth.saveToLocalStorage,
+      suggestedAWSRegion: dashboardSettings.defaultAwsRegion,
     });
-  }, [reset, appState]);
+  }, [reset, auth, dashboardSettings]);
 
   const onSubmit = handleSubmit((data) => {
-    appDispatch({
-      type: 'UPDATE_APP_SETTINGS',
-      payload: {
-        settings: {
-          defaultAwsRegion: data.suggestedAWSRegion,
-        },
-        auth: {
-          token: data.token,
-          saveToLocalStorage: data.saveTokenToLocalStorage,
-        },
-      },
-    });
+    setAuth({  token: data.token, saveToLocalStorage: data.saveTokenToLocalStorage });
+    setDashboardSettings({ defaultAwsRegion: data.suggestedAWSRegion });
     toast('Settings Updated');
   });
 
   return (
     <div className="max-w-md">
+      <pre>{JSON.stringify(auth, null, 2)}</pre>
       <form className="flex flex-col gap-6" onSubmit={onSubmit} autoComplete="off">
         <div tabIndex={0} className="collapse collapse-arrow border-base-300 bg-base-200 border">
           <input type="checkbox" className="peer" defaultChecked />

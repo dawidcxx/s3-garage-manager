@@ -61,9 +61,7 @@ export class S3GargaeClient {
 
     this.authMiddleware = {
       onRequest({ request }) {
-        if (token) {
-          request.headers.set('Authorization', `Bearer ${token}`);
-        }
+        request.headers.set('Authorization', `Bearer ${token}`);
         return request;
       },
       onResponse({ response }) {

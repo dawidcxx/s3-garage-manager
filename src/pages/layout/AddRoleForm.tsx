@@ -1,6 +1,6 @@
 import { s3GarageClient } from '@/api/garage/s3-garage-client';
 import { ClusterDetails } from '@/api/garage/s3-garage-client-responses';
-import { useAppState } from '@/core/appHooks';
+import { dashboardSettingsAtom } from '@/core/atoms/dashboardSettingsAtom';
 import { Drawer, DrawerApi } from '@/lib/components/Drawer';
 import { LabeledInput } from '@/lib/components/form/LabeledInput';
 import { LabeledSelect } from '@/lib/components/form/LabeledSelect';
@@ -11,6 +11,7 @@ import { useToaster } from '@/lib/components/Toaster/useToaster';
 import { errorToMessage } from '@/lib/util/error-to-message';
 import { formatNumberToGBs } from '@/lib/util/format-number-to-GBs';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 import { useForm, UseFormRegister, UseFormWatch, Controller, Control } from 'react-hook-form';
 
@@ -20,6 +21,7 @@ export interface AddRoleFormProps {
 }
 
 export function AddRoleForm({ drawerApi, clusterDetails }: AddRoleFormProps) {
+  const dashboardSettings = useAtomValue(dashboardSettingsAtom);
   const { toast } = useToaster();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const {
@@ -49,20 +51,19 @@ export function AddRoleForm({ drawerApi, clusterDetails }: AddRoleFormProps) {
     onSuccess: async () => {
       toast(<div>Addition staged</div>, ToastType.Success);
       await queryClient.invalidateQueries({ queryKey: ['layout'] });
-      reset({ capacity: DEFAULT_CAPACITY, tags: [], zone: appState.settings.defaultAwsRegion, nodeId: '' });
+      reset({ capacity: DEFAULT_CAPACITY, tags: [], zone: dashboardSettings.defaultAwsRegion, nodeId: '' });
     },
     onError: (e) => {
       setErrorMessage(errorToMessage(e));
     },
   });
 
-  const appState = useAppState();
 
   useEffect(() => {
     if (!isDirty) {
-      reset({ capacity: DEFAULT_CAPACITY, tags: [], zone: appState.settings.defaultAwsRegion, nodeId: '' });
+      reset({ capacity: DEFAULT_CAPACITY, tags: [], zone: dashboardSettings.defaultAwsRegion, nodeId: '' });
     }
-  }, [isDirty, appState.settings.defaultAwsRegion, reset]);
+  }, [isDirty, dashboardSettings.defaultAwsRegion, reset]);
 
   const onSubmit = handleSubmit((it) => mutation.mutateAsync(it));
 

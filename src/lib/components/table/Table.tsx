@@ -1,6 +1,7 @@
 import React from 'react';
 import { Title } from '../Title';
 import clsx from 'clsx';
+import { IconEmptyTable } from '../icons/IconEmptyTable';
 
 export interface TableProps {
   children?: React.ReactNode;
@@ -39,7 +40,22 @@ interface TableBodyProps {
 }
 
 function Body({ children }: TableBodyProps) {
-  return <tbody>{children}</tbody>;
+  const count = React.Children.count(children);
+  return (
+    <tbody>
+      {count === 0 && (
+        <tr>
+          <td colSpan={1000}>
+            <div className='flex flex-col items-center gap-3 pt-1 pb-1'>
+              <IconEmptyTable size='2.5rem' />
+              <div className='font-semibold'>No Items</div>
+            </div>
+          </td>
+        </tr>
+      )}
+      {children}
+    </tbody>
+  );
 }
 
 interface TableRowProps {

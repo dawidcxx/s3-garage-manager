@@ -1,38 +1,21 @@
 import clsx from 'clsx';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import GarageLogoImage from '@/lib/assets/garage-logo-horizontal.svg';
-import { Suspense, useLayoutEffect, useReducer } from 'react';
+import { Suspense } from 'react';
 import { IconKey } from '../lib/components/icons/IconKey';
 import { Toaster } from '../lib/components/Toaster/Toaster';
-import { appReducer, AppState } from '../core/appReducer';
-import { APP_INIT_STATE, AppContext, AppDispatchContext } from '../core/appContext';
-import { s3GarageClient } from '../api/garage/s3-garage-client';
-import { useAppDispatcher } from '../core/appHooks';
-import { produce } from 'immer';
 import { useQueryClient } from '@tanstack/react-query';
+import { useAtom } from 'jotai';
+import { authAtom } from '@/core/atoms/authAtom';
 
 export function App() {
-  const [state, dispatch] = useReducer(appReducer, APP_INIT_STATE);
-
-  useLayoutEffect(() => {
-    s3GarageClient.setToken(state.auth.token);
-    syncWithLocalStorage(state);
-  }, [state]);
-
-  return (
-    <AppContext.Provider value={state}>
-      {/* {JSON.stringify(state,null,2)} */}
-      <AppDispatchContext.Provider value={dispatch}>
-        <AppLayout />
-      </AppDispatchContext.Provider>
-    </AppContext.Provider>
-  );
+  return <AppLayout />;
 }
 
 function AppLayout() {
-  const appDispatch = useAppDispatcher();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [, setAuth] = useAtom(authAtom);
 
   return (
     <div className="flex flex-row">
@@ -89,7 +72,7 @@ function AppLayout() {
                   className="hover:text-red-400 hover:outline-error"
                   onClick={(e) => {
                     navigate('/settings');
-                    appDispatch({ type: 'CLEAR_TOKEN' });
+                    setAuth({ token: '', saveToLocalStorage: true });
                     e.currentTarget.blur();
                     queryClient.clear();
                   }}
@@ -170,15 +153,4 @@ function IconBxsCog() {
       <path d="M2.344 15.271l2 3.46a1 1 0 001.366.365l1.396-.806c.58.457 1.221.832 1.895 1.112V21a1 1 0 001 1h4a1 1 0 001-1v-1.598a8.094 8.094 0 001.895-1.112l1.396.806c.477.275 1.091.11 1.366-.365l2-3.46a1.004 1.004 0 00-.365-1.366l-1.372-.793a7.683 7.683 0 00-.002-2.224l1.372-.793c.476-.275.641-.89.365-1.366l-2-3.46a1 1 0 00-1.366-.365l-1.396.806A8.034 8.034 0 0015 4.598V3a1 1 0 00-1-1h-4a1 1 0 00-1 1v1.598A8.094 8.094 0 007.105 5.71L5.71 4.904a.999.999 0 00-1.366.365l-2 3.46a1.004 1.004 0 00.365 1.366l1.372.793a7.683 7.683 0 000 2.224l-1.372.793c-.476.275-.641.89-.365 1.366zM12 8c2.206 0 4 1.794 4 4s-1.794 4-4 4-4-1.794-4-4 1.794-4 4-4z" />
     </svg>
   );
-}
-
-function syncWithLocalStorage(state: AppState) {
-  const stateWithMaskedToken = produce(state, (it) => {
-    if (it.auth.saveToLocalStorage === false) {
-      // don't save the token unless explicitly told to
-      it.auth.token = '';
-    }
-  });
-
-  localStorage.setItem('appState', JSON.stringify(stateWithMaskedToken));
 }
