@@ -30,7 +30,6 @@ export function SettingsPage() {
 
   return (
     <div className="max-w-md">
-      <pre>{JSON.stringify(auth, null, 2)}</pre>
       <form className="flex flex-col gap-6" onSubmit={onSubmit} autoComplete="off">
         <div tabIndex={0} className="collapse collapse-arrow border-base-300 bg-base-200 border">
           <input type="checkbox" className="peer" defaultChecked />
