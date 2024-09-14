@@ -6,6 +6,7 @@ import { Keys } from './keys/Keys';
 import { Layout } from './layout/Layout';
 import { RouteErrorPage } from './error/RouteErrorPage';
 import { SettingsPage } from './settings/SettingsPage';
+import { BrowsePage } from './browser/BrowsePage';
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
         path: '/buckets',
         element: <Buckets />,
       },
+      {
+        path: '/browse',
+        element: <BrowsePage />
+      }
     ],
   },
 ]);

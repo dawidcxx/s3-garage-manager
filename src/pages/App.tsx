@@ -60,6 +60,17 @@ function AppLayout() {
                 </NavLink>
               </li>
             </ul>
+            {/* <div className="divider" />
+            <ul className="menu text-base-content w-64 p-4">
+              <li>
+                <NavLink
+                  to={'/browse'}
+                  className={({ isActive }) => clsx(isActive && 'active')}
+                >
+                  <IconFolders /> Browse Content
+                </NavLink>
+              </li>
+            </ul> */}
             <div className="divider" />
             <ul className="menu text-base-content w-64 p-4 flex-grow">
               <li>
@@ -151,6 +162,26 @@ function IconBxsCog() {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" height="1em" width="1em">
       <path d="M2.344 15.271l2 3.46a1 1 0 001.366.365l1.396-.806c.58.457 1.221.832 1.895 1.112V21a1 1 0 001 1h4a1 1 0 001-1v-1.598a8.094 8.094 0 001.895-1.112l1.396.806c.477.275 1.091.11 1.366-.365l2-3.46a1.004 1.004 0 00-.365-1.366l-1.372-.793a7.683 7.683 0 00-.002-2.224l1.372-.793c.476-.275.641-.89.365-1.366l-2-3.46a1 1 0 00-1.366-.365l-1.396.806A8.034 8.034 0 0015 4.598V3a1 1 0 00-1-1h-4a1 1 0 00-1 1v1.598A8.094 8.094 0 007.105 5.71L5.71 4.904a.999.999 0 00-1.366.365l-2 3.46a1.004 1.004 0 00.365 1.366l1.372.793a7.683 7.683 0 000 2.224l-1.372.793c-.476.275-.641.89-.365 1.366zM12 8c2.206 0 4 1.794 4 4s-1.794 4-4 4-4-1.794-4-4 1.794-4 4-4z" />
+    </svg>
+  );
+}
+
+function IconFolders() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1rem"
+      height="1rem"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      className="lucide lucide-folder-tree"
+      viewBox="0 0 24 24"
+    >
+      <path d="M20 10a1 1 0 001-1V6a1 1 0 00-1-1h-2.5a1 1 0 01-.8-.4l-.9-1.2A1 1 0 0015 3h-2a1 1 0 00-1 1v5a1 1 0 001 1zM20 21a1 1 0 001-1v-3a1 1 0 00-1-1h-2.9a1 1 0 01-.88-.55l-.42-.85a1 1 0 00-.92-.6H13a1 1 0 00-1 1v5a1 1 0 001 1zM3 5a2 2 0 002 2h3"></path>
+      <path d="M3 3v13a2 2 0 002 2h3"></path>
     </svg>
   );
 }
