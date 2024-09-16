@@ -26,6 +26,10 @@ export async function checkResponse<T>(schema: Zod.ZodSchema<T>, response: Respo
         throw new BadRequestError(asStandardErrorResponse.data.message, asStandardErrorResponse.data);
       }
 
+      if (response.status === 401) {
+        throw new ForbiddenError(asStandardErrorResponse.data.message, asStandardErrorResponse.data);
+      }
+
       if (response.status === 403) {
         throw new ForbiddenError(asStandardErrorResponse.data.message, asStandardErrorResponse.data);
       }
@@ -34,8 +38,8 @@ export async function checkResponse<T>(schema: Zod.ZodSchema<T>, response: Respo
         throw new AlreadyExistsError(asStandardErrorResponse.data.message, asStandardErrorResponse.data);
       }
 
-      if (response.status > 500) {
-        throw new ServerError('Server error', asStandardErrorResponse.data);
+      if (response.status >= 500) {
+        throw new ServerError('Server error', asStandardErrorResponse.data.message, response);
       }
 
       throw new ApiError(asStandardErrorResponse.data.message, asStandardErrorResponse.data);

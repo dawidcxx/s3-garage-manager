@@ -1,3 +1,5 @@
+import { FetchError } from '@/lib/errors';
+import { joinPaths } from '@/lib/util/join-paths';
 import { mapOptional } from '@/lib/util/mapOptional';
 import { normalizeURL } from '@/lib/util/normalize-url';
 
@@ -31,21 +33,25 @@ export class HttpClient {
     const url = this.buildUrl(path, options);
     const headers = this.buildHeaders();
     const body = mapOptional(options.body, (body) => JSON.stringify(body));
-    return fetch(url, { method: 'GET', headers, body });
+    return fetch(url, { method: 'GET', headers, body }).catch(HttpClient.mapFetchError);
   }
 
   async POST(path: string, options: Partial<HttpOptions> = {}): Promise<Response> {
     const body = mapOptional(options.body, (body) => JSON.stringify(body));
-    return fetch(this.buildUrl(path, options), { method: 'POST', body, headers: this.buildHeaders() });
+    return fetch(this.buildUrl(path, options), { method: 'POST', body, headers: this.buildHeaders() }).catch(
+      HttpClient.mapFetchError,
+    );
   }
 
   async DELETE(path: string, options: Partial<HttpOptions> = {}): Promise<Response> {
     const body = mapOptional(options.body, (body) => JSON.stringify(body));
-    return fetch(this.buildUrl(path, options), { method: 'DELETE', body, headers: this.buildHeaders() });
+    const url = this.buildUrl(path, options);
+    return fetch(url, { method: 'DELETE', body, headers: this.buildHeaders() }).catch(HttpClient.mapFetchError);
   }
 
   private buildUrl(path: string, options: Partial<HttpOptions> = {}): URL {
-    const url = new URL(`${this.baseUrl}${path}`);
+    const url = mapOptional(this.baseUrl, (baseUrl) => new URL(joinPaths(baseUrl, path))) ?? new URL(path);
+
     const params = mapOptional(options.params, (params) => new URLSearchParams(params).toString());
     if (params) {
       url.search = params;
@@ -59,5 +65,12 @@ export class HttpClient {
       headers.set('Authorization', `Bearer ${this.token}`);
     }
     return headers;
+  }
+
+  private static mapFetchError(e: unknown): never {
+    if (e instanceof TypeError) {
+      throw new FetchError('Failed to fetch', e);
+    }
+    throw e;
   }
 }

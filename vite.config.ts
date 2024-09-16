@@ -25,13 +25,10 @@ export default function (): UserConfig {
         '@': path.resolve(__dirname, './src'),
       },
     },
-    build: {
-      sourcemap: false,
-      minify: false
-    },
     preview: {
-      port: 4173,
+      port: 5001,
       strictPort: true,
     },
   });
 }
+
