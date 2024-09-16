@@ -46,8 +46,18 @@ export class AlreadyExistsError extends ApiError {
 export class ServerError extends ApiError {
   constructor(
     public readonly message: string,
+    public readonly details: string,
     public readonly cause: unknown,
   ) {
     super(`Server Error: '${message}'`, cause);
+  }
+}
+
+export class FetchError extends ApiError {
+  constructor(
+    public readonly message: string,
+    public readonly cause: unknown,
+  ) {
+    super(`Fetch Error: '${message}'`, cause);
   }
 }

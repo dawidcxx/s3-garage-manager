@@ -84,11 +84,16 @@ interface OverviewProps {
 
 export function OverviewStat({ metricName, metricSecondary, metricValue, metricIcon }: OverviewProps) {
   return (
-    <div className="inline-block">
+    <div className="inline-block" data-testid={`METRIC_${metricName}`}>
       <div className=" p-4 rounded-lg flex flex-row  shadow-md bg-zinc-900">
         <div className="flex flex-col flex-grow mr-12">
           <div className=" text-sm lowercase mb-1 tracking-wide font-semibold">{metricName}</div>
-          <div className="text-primary text-xl tracking-wide uppercase font-bold">{metricValue}</div>
+          <div
+            className="text-primary text-xl tracking-wide uppercase font-bold"
+            data-testid={`METRIC_VALUE_${metricName}`}
+          >
+            {metricValue}
+          </div>
           <div className="text-xs text-slate-500">{metricSecondary}</div>
         </div>
         <div className="flex flex-col justify-center items-center pt-1">{metricIcon}</div>

@@ -9,8 +9,6 @@ import {
   UpdateLayout,
   UpdateLayoutSchema,
 } from './s3-garage-client-requests';
-import createClient, { Client, Middleware } from 'openapi-fetch';
-import { paths } from './garage-schema';
 import {
   BucketListItem,
   BucketListItemsSchema,
@@ -29,17 +27,15 @@ import {
   LayoutDescriptionSchema,
 } from './s3-garage-client-responses';
 import { z } from 'zod';
-import { isNil } from '@/lib/util/isNil';
 import { GARAGE_ADMIN_API_URL } from '@/core/appConfig';
+import { HttpClient } from '../http-client';
 
 export class S3GargaeClient {
-  private readonly client: Client<paths>;
-  private authMiddleware: Middleware | null = null;
+  private token: string | null = null;
+  private http: HttpClient;
 
   constructor(garageAdminApiUrl: string) {
-    this.client = createClient<paths>({
-      baseUrl: garageAdminApiUrl,
-    });
+    this.http = HttpClient.with({ baseUrl: garageAdminApiUrl });
   }
 
   /**
@@ -48,122 +44,108 @@ export class S3GargaeClient {
    * @param token - Token to be used for upcoming requests. Set to null to destroy the stored token
    */
   async setToken(token: string | null) {
-    if (isNil(token)) {
-      if (this.authMiddleware) {
-        this.client.eject(this.authMiddleware);
-      }
-      return;
-    }
-
-    if (this.authMiddleware) {
-      this.client.eject(this.authMiddleware);
-    }
-
-    this.authMiddleware = {
-      onRequest({ request }) {
-        request.headers.set('Authorization', `Bearer ${token}`);
-        return request;
-      },
-      onResponse({ response }) {
-        return response;
-      },
-    };
-    this.client.use(this.authMiddleware);
+    this.token = token;
   }
 
   async getHealthCheckReport(): Promise<HealthReportResponse> {
-    const response = await this.client.GET('/health');
+    const response = await this.http.with({ token: this.token }).GET('/health');
     return checkResponse(HealthReportResponseSchema, response);
   }
 
   async getClusterDetails(): Promise<ClusterDetails> {
-    const response = await this.client.GET('/status');
+    const response = await this.http.with({ token: this.token }).GET('/status');
     return checkResponse(ClusterDetailsSchema, response);
   }
 
-  async removeKey(keyId: string) {
-    await this.client.DELETE('/key', {
-      params: { query: { id: keyId } },
-    });
+  async removeKey(keyId: string): Promise<void> {
+    const response = await this.http.with({ token: this.token }).DELETE(`/key`, { params: { key: keyId } });
+    await checkResponse(z.any(), response);
   }
 
   async createKey(keyName: string): Promise<CreatedKey> {
-    const response = await this.client.POST('/key?list', {
+    const response = await this.http.with({ token: this.token }).POST('/key?list', {
       body: {
         name: keyName,
       },
     });
-    const createdKey = checkResponse(CreatedKeySchema, response);
+    const createdKey = await checkResponse(CreatedKeySchema, response);
     return createdKey;
   }
 
   async getKeyDetails(keyId: string): Promise<KeyDetails> {
-    const response = await this.client.GET('/key', {
-      params: { query: { id: keyId, showSecretKey: 'true' } },
+    const response = await this.http.with({ token: this.token }).GET('/key', {
+      params: {
+        id: keyId,
+        showSecretKey: 'true',
+      },
     });
-    const keyDetails = checkResponse(KeyDetailsSchema, response);
+    const keyDetails = await checkResponse(KeyDetailsSchema, response);
     return keyDetails;
   }
 
   async listAllKeys(): Promise<KeyListItem[]> {
-    const response = await this.client.GET('/key?list');
-    const keys = checkResponse(KeyListItemsSchema, response);
+    const response = await this.http.with({ token: this.token }).GET('/key?list');
+    const keys = await checkResponse(KeyListItemsSchema, response);
     return keys;
   }
 
   async listAllBuckets(): Promise<BucketListItem[]> {
-    const reponse = await this.client.GET('/bucket?list');
-    const buckets = checkResponse(BucketListItemsSchema, reponse);
+    const reponse = await this.http.with({ token: this.token }).GET('/bucket?list');
+    const buckets = await checkResponse(BucketListItemsSchema, reponse);
     return buckets;
   }
 
   async removeBucket(bucketId: string): Promise<void> {
-    const reponse = await this.client.DELETE('/bucket', { params: { query: { id: bucketId } } });
-    checkResponse(z.any(), reponse);
+    const reponse = await this.http.with({ token: this.token }).DELETE('/bucket', { params: { id: bucketId } });
+    await checkResponse(z.any(), reponse);
   }
 
   async createBucket(request: CreateBucketRequest) {
     checkRequest(CreateBucketRequestSchema, request);
-    const response = await this.client.POST('/bucket', {
+    const response = await this.http.with({ token: this.token }).POST('/bucket', {
       body: request,
     });
-    const createdBucket = checkResponse(CreateBucketResponseSchema, response);
+    const createdBucket = await checkResponse(CreateBucketResponseSchema, response);
     return createdBucket;
   }
 
   async allowKeyToBucket(request: AllowKeyToBucketRequest): Promise<void> {
     checkRequest(AllowKeyToBucketRequestSchema, request);
-    const response = await this.client.POST('/bucket/allow', {
+    const response = await this.http.with({ token: this.token }).POST('/bucket/allow', {
       body: request,
     });
-    checkResponse(z.any(), response);
+    await checkResponse(z.any(), response);
   }
 
   async getCurrentLayout(): Promise<LayoutDescription> {
-    const response = await this.client.GET('/layout');
+    const response = await this.http.with({ token: this.token }).GET('/layout');
     return checkResponse(LayoutDescriptionSchema, response);
   }
 
   async updateLayout(updates: UpdateLayout): Promise<void> {
     checkRequest(UpdateLayoutSchema, updates);
-    const response = await this.client.POST('/layout', { body: updates });
-    checkResponse(z.any(), response);
+    const response = await this.http.with({ token: this.token }).POST('/layout', { body: updates });
+    await checkResponse(z.any(), response);
   }
 
   async discardLayout(nextVersion: number): Promise<void> {
-    const response = await this.client.POST('/layout/revert', { body: { version: nextVersion } });
-    checkResponse(z.any(), response);
+    const response = await this.http
+      .with({ token: this.token })
+      .POST('/layout/revert', { body: { version: nextVersion } });
+    await checkResponse(z.any(), response);
   }
 
   async applyLayout(nextVersion: number): Promise<void> {
-    const response = await this.client.POST('/layout/apply', { body: { version: nextVersion } });
-    checkResponse(z.any(), response);
+    const response = await this.http
+      .with({ token: this.token })
+      .POST('/layout/apply', { body: { version: nextVersion } });
+    await checkResponse(z.any(), response);
   }
 
   async removeLayoutNode(toRemove: RemoveLayoutNode): Promise<void> {
     checkRequest(RemoveLayoutNodeSchema, toRemove);
-    const response = await this.client.POST('/layout', { body: toRemove });
-    checkResponse(z.any(), response);
+    const response = await this.http.with({ token: this.token }).POST('/layout', { body: toRemove });
+    await checkResponse(z.any(), response);
   }
 }
 

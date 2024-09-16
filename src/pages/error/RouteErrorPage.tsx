@@ -1,6 +1,6 @@
 import { ToastType } from '@/lib/components/Toaster/Toast';
 import { useToaster } from '@/lib/components/Toaster/useToaster';
-import { ApiError, ForbiddenError, InvalidReponse, ServerError } from '@/lib/errors';
+import { ApiError, FetchError, ForbiddenError, InvalidReponse, ServerError } from '@/lib/errors';
 import clsx from 'clsx';
 import { useLayoutEffect } from 'react';
 import { isRouteErrorResponse, Link, useNavigate, useRouteError } from 'react-router-dom';
@@ -73,7 +73,16 @@ function ApiErrorAlert(props: { error: unknown }) {
       <ErrorAlert
         title={'Server  Error'}
         message={
-          'Unable to reach the server. Please try again later or check your garage server installation. For more details check browser network console.'
+          <div>
+            <div>
+              Unable to reach the server. Please try again later or check your garage server installation. For more
+              details check browser network console.
+            </div>
+            <details>
+              <summary>Details</summary>
+              <pre>{error.details}</pre>
+            </details>
+          </div>
         }
         variant={'error'}
       />
@@ -91,6 +100,25 @@ function ApiErrorAlert(props: { error: unknown }) {
               <summary>Details</summary>
               <pre>{error.serializedErrors}</pre>
             </details>
+          </div>
+        }
+        variant={'error'}
+      />
+    );
+  }
+
+  if (error instanceof FetchError) {
+    return (
+      <ErrorAlert
+        title="Fetch Error"
+        message={
+          <div>
+            <div className='mb-1'>Failed to fetch data from the server</div>
+            <ul>
+              <li>• Internet connectivity problems</li>
+              <li>• Server is down or unreachable</li>
+              <li>• Server has misconfigured CORS headers</li>
+            </ul>
           </div>
         }
         variant={'error'}
