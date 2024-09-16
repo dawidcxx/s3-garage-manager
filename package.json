@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "test": "playwright test",
+    "test": "vite build && playwright test",
+    "test:ui": "vite build && playwright test --ui",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
@@ -19,7 +20,6 @@
     "immer": "^10.1.1",
     "jotai": "^2.9.3",
     "jotai-tanstack-query": "^0.8.7",
-    "openapi-fetch": "^0.11.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",

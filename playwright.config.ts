@@ -22,16 +22,25 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    
   },
   /* Configure projects for major browsers */
   projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
   ],
+
   webServer: {
-    command: 'npm run preview',
+    command: 'pnpm run build && pnpm run preview',
+    env: {
+      VITE_GARAGE_ADMIN_API_URL: 'http://localhost:4173/s3-admin-api/v1',
+    },
     url: 'http://localhost:4173',
     reuseExistingServer: !process.env.CI,
   },

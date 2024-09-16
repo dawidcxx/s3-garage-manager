@@ -26,9 +26,6 @@ importers:
       jotai-tanstack-query:
         specifier: ^0.8.7
         version: 0.8.7(@tanstack/query-core@5.52.2)(jotai@2.9.3(@types/react@18.3.4)(react@18.3.1))
-      openapi-fetch:
-        specifier: ^0.11.1
-        version: 0.11.1
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -1260,12 +1257,6 @@ packages:
   object-hash@3.0.0:
     resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
     engines: {node: '>= 6'}
-
-  openapi-fetch@0.11.1:
-    resolution: {integrity: sha512-WtDQsrvxjXuCmo6u6WMQPfUaya8cLfL+ZCaXorPo9MMumqlU/Km/SrCXsEcJH234D4iykOkvJ6Q/iWBzK7+3rA==}
-
-  openapi-typescript-helpers@0.0.12:
-    resolution: {integrity: sha512-FO+5kTWO6KDutigamr2MRwciYkAUYhqdctlyVRrQOe2uxif2/O2+GcS07jNnP36AUK6ubSsGu3GeBiYIc6eQzA==}
 
   openapi-typescript@7.3.0:
     resolution: {integrity: sha512-EkljRjYWOPwGXiK++uI9MkGv2Y7uhbkZbi9V1z3r3EpmWVO6aFTHXSLNvxIWo6UT6LCTYgEYkUB3BWQjwwXthg==}
@@ -2726,12 +2717,6 @@ snapshots:
   object-assign@4.1.1: {}
 
   object-hash@3.0.0: {}
-
-  openapi-fetch@0.11.1:
-    dependencies:
-      openapi-typescript-helpers: 0.0.12
-
-  openapi-typescript-helpers@0.0.12: {}
 
   openapi-typescript@7.3.0(typescript@5.5.4):
     dependencies:
